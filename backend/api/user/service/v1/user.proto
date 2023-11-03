@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package user.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/protobuf/empty.proto";
+import "common/pagination/pagination.proto";
+
+option go_package = "github.com/devexps/go-monolithic-demo/gen/api/go/user/service/v1;v1";
+
+service UserService {
+  // ListUser
+  rpc ListUser (pagination.PagingRequest) returns (ListUserResponse) {}
+
+  // GetUser
+  rpc GetUser (GetUserRequest) returns (User) {}
+
+  // CreateUser
+  rpc CreateUser (CreateUserRequest) returns (User) {}
+
+  // UpdateUser
+  rpc UpdateUser (UpdateUserRequest) returns (User) {}
+
+  // DeleteUser
+  rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {}
+
+  // GetUserByUserName
+  rpc GetUserByUserName (GetUserByUserNameRequest) returns (User) {}
+}
+
+// UserAuthority
+enum UserAuthority {
+  SYS_ADMIN = 0; // System super user
+  CUSTOMER_USER = 1; // Ordinary user
+  GUEST_USER = 2; // Guest
+  REFRESH_TOKEN = 3; // Refresh token
+}
+
+// User
+message User {
+  string id = 1;
+  string roleId = 2 [json_name = "roleId", (gnostic.openapi.v3.property) = {description: "RoleID"}];
+  string workId = 3 [json_name = "workId", (gnostic.openapi.v3.property) = {description: "WorkID"}];
+  string orgId = 4 [json_name = "orgId", (gnostic.openapi.v3.property) = {description: "OrgID"}];
+  string positionId = 5 [json_name = "positionId", (gnostic.openapi.v3.property) = {description: "PositionID"}];
+  string creatorId = 6 [json_name = "creatorId", (gnostic.openapi.v3.property) = {description: "CreatorID"}];
+
+  string userName = 10;
+  string nickName = 11;
+  string realName = 12 [json_name = "realName", (gnostic.openapi.v3.property) = {description: "Real Name"}];
+  string avatar = 13 [json_name = "avatar", (gnostic.openapi.v3.property) = {description: "Avatar"}];
+  string email = 14 [json_name = "email", (gnostic.openapi.v3.property) = {description: "Email"}];
+  string phone = 15 [json_name = "phone", (gnostic.openapi.v3.property) = {description: "Phone"}];
+  string gender = 16 [json_name = "gender", (gnostic.openapi.v3.property) = {description: "Gender"}];
+  string address = 17 [json_name = "address", (gnostic.openapi.v3.property) = {description: "Address"}];
+  string description = 18;
+
+  int64 lastLoginTime = 20 [json_name = "lastLoginTime", (gnostic.openapi.v3.property) = {description: "Last login time"}];
+  string lastLoginIp = 21 [json_name = "lastLoginIp", (gnostic.openapi.v3.property) = {description: "Last login IP"}];
+  string status = 22 [(gnostic.openapi.v3.property) = {
+    description: "Status"
+    default: {string: "ON"}
+    enum: [{yaml: "ON"}, {yaml: "OFF"}]
+  }];
+  UserAuthority authority = 23 [(gnostic.openapi.v3.property) = {
+    description: "Authority"
+    default: {string: "CUSTOMER_USER"}
+  }];
+
+  string createTime = 30;
+  string updateTime = 31;
+  string deleteTime = 32;
+}
+
+// ListUserResponse
+message ListUserResponse {
+  repeated User items = 1;
+  int32 total = 2;
+}
+
+// GetUserRequest
+message GetUserRequest {
+  string id = 1;
+}
+
+// CreateUserRequest
+message CreateUserRequest {
+  User user = 1;
+  string operatorId = 2;
+}
+
+// UpdateUserRequest
+message UpdateUserRequest {
+  string id = 1;
+  User user = 2;
+  string operatorId = 3;
+}
+
+// DeleteUserRequest
+message DeleteUserRequest {
+  string id = 1;
+  string operatorId = 2;
+}
+
+// GetUserByUserNameRequest
+message GetUserByUserNameRequest {
+  string userName = 1;
+}

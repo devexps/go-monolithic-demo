@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "errors/errors.proto";
+
+option go_package = "github.com/devexps/go-monolithic-demo/gen/api/go/admin/service/v1;v1";
+
+enum AdminErrorReason {
+  option (errors.default_code) = 500;
+
+  NOT_LOGGED_IN = 0 [(errors.code) = 401]; // 401 code
+}
