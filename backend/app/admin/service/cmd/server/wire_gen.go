@@ -22,12 +22,15 @@ import (
 func initApp(logger log.Logger, registrar registry.Registrar, bootstrap *v1.Bootstrap) (*micro.App, func(), error) {
 	authenticator := data.NewAuthenticator(bootstrap)
 	authorizer := data.NewAuthorizer()
-	authenticationService := service.NewAuthenticationService(logger)
-	dataData, cleanup, err := data.NewData(logger)
+	entClient := data.NewEntClient(bootstrap, logger)
+	client := data.NewRedisClient(bootstrap, logger)
+	dataData, cleanup, err := data.NewData(logger, entClient, client, authenticator, authorizer)
 	if err != nil {
 		return nil, nil, err
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
+	userTokenRepo := data.NewUserTokenRepo(dataData, logger)
+	authenticationService := service.NewAuthenticationService(logger, userRepo, userTokenRepo)
 	userService := service.NewUserService(logger, userRepo)
 	httpServer := server.NewHTTPServer(bootstrap, logger, authenticator, authorizer, authenticationService, userService)
 	app := newApp(logger, registrar, httpServer)

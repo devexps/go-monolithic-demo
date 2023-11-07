@@ -27,6 +27,8 @@ const (
 	UserService_UpdateUser_FullMethodName        = "/user.service.v1.UserService/UpdateUser"
 	UserService_DeleteUser_FullMethodName        = "/user.service.v1.UserService/DeleteUser"
 	UserService_GetUserByUserName_FullMethodName = "/user.service.v1.UserService/GetUserByUserName"
+	UserService_VerifyPassword_FullMethodName    = "/user.service.v1.UserService/VerifyPassword"
+	UserService_UserExists_FullMethodName        = "/user.service.v1.UserService/UserExists"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -45,6 +47,10 @@ type UserServiceClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetUserByUserName
 	GetUserByUserName(ctx context.Context, in *GetUserByUserNameRequest, opts ...grpc.CallOption) (*User, error)
+	// VerifyPassword
+	VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*User, error)
+	// UserExists
+	UserExists(ctx context.Context, in *UserExistsRequest, opts ...grpc.CallOption) (*UserExistsResponse, error)
 }
 
 type userServiceClient struct {
@@ -109,6 +115,24 @@ func (c *userServiceClient) GetUserByUserName(ctx context.Context, in *GetUserBy
 	return out, nil
 }
 
+func (c *userServiceClient) VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, UserService_VerifyPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserExists(ctx context.Context, in *UserExistsRequest, opts ...grpc.CallOption) (*UserExistsResponse, error) {
+	out := new(UserExistsResponse)
+	err := c.cc.Invoke(ctx, UserService_UserExists_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -125,6 +149,10 @@ type UserServiceServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	// GetUserByUserName
 	GetUserByUserName(context.Context, *GetUserByUserNameRequest) (*User, error)
+	// VerifyPassword
+	VerifyPassword(context.Context, *VerifyPasswordRequest) (*User, error)
+	// UserExists
+	UserExists(context.Context, *UserExistsRequest) (*UserExistsResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -149,6 +177,12 @@ func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserReq
 }
 func (UnimplementedUserServiceServer) GetUserByUserName(context.Context, *GetUserByUserNameRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUserName not implemented")
+}
+func (UnimplementedUserServiceServer) VerifyPassword(context.Context, *VerifyPasswordRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
+}
+func (UnimplementedUserServiceServer) UserExists(context.Context, *UserExistsRequest) (*UserExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserExists not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -271,6 +305,42 @@ func _UserService_GetUserByUserName_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_VerifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).VerifyPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_VerifyPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).VerifyPassword(ctx, req.(*VerifyPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserExistsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserExists(ctx, req.(*UserExistsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -301,6 +371,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByUserName",
 			Handler:    _UserService_GetUserByUserName_Handler,
+		},
+		{
+			MethodName: "VerifyPassword",
+			Handler:    _UserService_VerifyPassword_Handler,
+		},
+		{
+			MethodName: "UserExists",
+			Handler:    _UserService_UserExists_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

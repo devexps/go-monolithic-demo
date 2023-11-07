@@ -8,9 +8,10 @@ import "common/pagination/pagination.proto";
 
 option go_package = "github.com/devexps/go-monolithic-demo/gen/api/go/user/service/v1;v1";
 
+// UserService
 service UserService {
   // ListUser
-  rpc ListUser (pagination.PagingRequest) returns (ListUserResponse) {}
+  rpc ListUser (common.pagination.PagingRequest) returns (ListUserResponse) {}
 
   // GetUser
   rpc GetUser (GetUserRequest) returns (User) {}
@@ -26,6 +27,12 @@ service UserService {
 
   // GetUserByUserName
   rpc GetUserByUserName (GetUserByUserNameRequest) returns (User) {}
+
+  // VerifyPassword
+  rpc VerifyPassword (VerifyPasswordRequest) returns (User) {}
+
+  // UserExists
+  rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {}
 }
 
 // UserAuthority
@@ -105,4 +112,20 @@ message DeleteUserRequest {
 // GetUserByUserNameRequest
 message GetUserByUserNameRequest {
   string userName = 1;
+}
+
+// VerifyPasswordRequest
+message VerifyPasswordRequest {
+  string userName = 1;
+  string password = 2;
+}
+
+// UserExistsRequest
+message UserExistsRequest {
+  string userName = 1;
+}
+
+// UserExistsResponse
+message UserExistsResponse {
+  bool exist = 1;
 }

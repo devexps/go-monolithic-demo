@@ -12,3 +12,19 @@ services:
       - CONSUL_ENABLE_UI=true
       - CONSUL_BOOTSTRAP_EXPECT=1
       - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+
+  postgres:
+    image: docker.io/bitnami/postgresql:12.0.0
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=micro
+      - POSTGRES_PASSWORD=micro@123
+      - POSTGRES_DB=micro
+
+  redis:
+    image: docker.io/bitnami/redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes

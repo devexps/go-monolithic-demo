@@ -12,15 +12,29 @@ import (
 const _ = errors.SupportPackageIsVersion1
 
 // 401 code
-func IsUserNotFound(err error) bool {
+func IsUserNotExist(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == AdminErrorReason_USER_NOT_FOUND.String() && e.Code == 401
+	return e.Reason == UserErrorReason_USER_NOT_EXIST.String() && e.Code == 401
 }
 
 // 401 code
-func ErrorUserNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, AdminErrorReason_USER_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+func ErrorUserNotExist(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, UserErrorReason_USER_NOT_EXIST.String(), fmt.Sprintf(format, args...))
+}
+
+// 402 code
+func IsInvalidPassword(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_INVALID_PASSWORD.String() && e.Code == 402
+}
+
+// 402 code
+func ErrorInvalidPassword(format string, args ...interface{}) *errors.Error {
+	return errors.New(402, UserErrorReason_INVALID_PASSWORD.String(), fmt.Sprintf(format, args...))
 }

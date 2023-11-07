@@ -13,7 +13,7 @@ option go_package = "github.com/devexps/go-monolithic-demo/gen/api/go/admin/serv
 // UserService
 service UserService {
   // ListUser
-  rpc ListUser (pagination.PagingRequest) returns (user.service.v1.ListUserResponse) {
+  rpc ListUser (common.pagination.PagingRequest) returns (user.service.v1.ListUserResponse) {
     option (google.api.http) = {
       get: "/admin/v1/users"
     };

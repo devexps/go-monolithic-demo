@@ -1,8 +1,8 @@
 data:
   database:
     driver: "postgres"
-    source: "host=localhost port=5432 user=postgres password=Aa@123456 dbname=go_monolithic sslmode=disable"
-    migrate: true
+    source: "host=localhost port=5432 user=micro password=micro@123 dbname=micro sslmode=disable"
+    migrate: false
     debug: false
     max_idle_connections: 25
     max_open_connections: 25
