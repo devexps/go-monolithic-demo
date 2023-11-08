@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,7 +21,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserTokenService_GenerateToken_FullMethodName = "/user_token.service.v1.UserTokenService/GenerateToken"
+	UserTokenService_GenerateToken_FullMethodName       = "/user_token.service.v1.UserTokenService/GenerateToken"
+	UserTokenService_RemoveToken_FullMethodName         = "/user_token.service.v1.UserTokenService/RemoveToken"
+	UserTokenService_GetRefreshToken_FullMethodName     = "/user_token.service.v1.UserTokenService/GetRefreshToken"
+	UserTokenService_GenerateAccessToken_FullMethodName = "/user_token.service.v1.UserTokenService/GenerateAccessToken"
 )
 
 // UserTokenServiceClient is the client API for UserTokenService service.
@@ -29,6 +33,12 @@ const (
 type UserTokenServiceClient interface {
 	// GenerateToken
 	GenerateToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*TokenResponse, error)
+	// RemoveToken
+	RemoveToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// GetRefreshToken
+	GetRefreshToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*TokenResponse, error)
+	// GenerateAccessToken
+	GenerateAccessToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*TokenResponse, error)
 }
 
 type userTokenServiceClient struct {
@@ -48,12 +58,45 @@ func (c *userTokenServiceClient) GenerateToken(ctx context.Context, in *v1.User,
 	return out, nil
 }
 
+func (c *userTokenServiceClient) RemoveToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserTokenService_RemoveToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userTokenServiceClient) GetRefreshToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
+	err := c.cc.Invoke(ctx, UserTokenService_GetRefreshToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userTokenServiceClient) GenerateAccessToken(ctx context.Context, in *v1.User, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
+	err := c.cc.Invoke(ctx, UserTokenService_GenerateAccessToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserTokenServiceServer is the server API for UserTokenService service.
 // All implementations must embed UnimplementedUserTokenServiceServer
 // for forward compatibility
 type UserTokenServiceServer interface {
 	// GenerateToken
 	GenerateToken(context.Context, *v1.User) (*TokenResponse, error)
+	// RemoveToken
+	RemoveToken(context.Context, *v1.User) (*emptypb.Empty, error)
+	// GetRefreshToken
+	GetRefreshToken(context.Context, *v1.User) (*TokenResponse, error)
+	// GenerateAccessToken
+	GenerateAccessToken(context.Context, *v1.User) (*TokenResponse, error)
 	mustEmbedUnimplementedUserTokenServiceServer()
 }
 
@@ -63,6 +106,15 @@ type UnimplementedUserTokenServiceServer struct {
 
 func (UnimplementedUserTokenServiceServer) GenerateToken(context.Context, *v1.User) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateToken not implemented")
+}
+func (UnimplementedUserTokenServiceServer) RemoveToken(context.Context, *v1.User) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveToken not implemented")
+}
+func (UnimplementedUserTokenServiceServer) GetRefreshToken(context.Context, *v1.User) (*TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRefreshToken not implemented")
+}
+func (UnimplementedUserTokenServiceServer) GenerateAccessToken(context.Context, *v1.User) (*TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateAccessToken not implemented")
 }
 func (UnimplementedUserTokenServiceServer) mustEmbedUnimplementedUserTokenServiceServer() {}
 
@@ -95,6 +147,60 @@ func _UserTokenService_GenerateToken_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserTokenService_RemoveToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserTokenServiceServer).RemoveToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserTokenService_RemoveToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserTokenServiceServer).RemoveToken(ctx, req.(*v1.User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserTokenService_GetRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserTokenServiceServer).GetRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserTokenService_GetRefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserTokenServiceServer).GetRefreshToken(ctx, req.(*v1.User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserTokenService_GenerateAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserTokenServiceServer).GenerateAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserTokenService_GenerateAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserTokenServiceServer).GenerateAccessToken(ctx, req.(*v1.User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserTokenService_ServiceDesc is the grpc.ServiceDesc for UserTokenService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -105,6 +211,18 @@ var UserTokenService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateToken",
 			Handler:    _UserTokenService_GenerateToken_Handler,
+		},
+		{
+			MethodName: "RemoveToken",
+			Handler:    _UserTokenService_RemoveToken_Handler,
+		},
+		{
+			MethodName: "GetRefreshToken",
+			Handler:    _UserTokenService_GetRefreshToken_Handler,
+		},
+		{
+			MethodName: "GenerateAccessToken",
+			Handler:    _UserTokenService_GenerateAccessToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

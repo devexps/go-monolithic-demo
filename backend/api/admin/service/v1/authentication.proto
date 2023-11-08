@@ -115,9 +115,10 @@ message RefreshTokenRequest {
 
 // RefreshTokenResponse
 message RefreshTokenResponse {
-  string refreshToken = 1 [json_name = "refresh_token"];
-  string grandType = 2 [json_name = "grand_type"];
-  int64 expiresIn = 3 [json_name = "expires_in"];
+  string accessToken = 1 [json_name = "access_token"];
+  string refreshToken = 2 [json_name = "refresh_token"];
+  string grandType = 3 [json_name = "grand_type"];
+  int64 expiresIn = 4 [json_name = "expires_in"];
 }
 
 // GetMeRequest

@@ -33,26 +33,30 @@ func (User) Fields() []ent.Field {
 			Comment("id").
 			Unique().
 			MaxLen(36),
-		field.String("userName").
-			Comment("userName").
+		field.String("user_name").
+			Comment("user_name").
 			Unique().
 			MaxLen(50).
 			Match(regexp.MustCompile("^[a-zA-Z0-9]{4,16}$")),
 		field.String("password").
 			Comment("password").
 			MaxLen(255),
-		field.String("nickName").
-			Comment("nickName").
-			MaxLen(128),
-		field.String("realName").
-			Comment("realName").
-			MaxLen(128),
+		field.String("nick_name").
+			Comment("nick_name").
+			MaxLen(128).
+			Optional(),
+		field.String("real_name").
+			Comment("real_name").
+			MaxLen(128).
+			Optional(),
 		field.String("email").
 			Comment("email").
-			MaxLen(127),
+			MaxLen(127).
+			Optional(),
 		field.String("phone").
 			Comment("phone").
-			MaxLen(11),
+			MaxLen(11).
+			Optional(),
 	}
 }
 
@@ -65,6 +69,6 @@ func (User) Edges() []ent.Edge {
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("id").Unique(),
-		index.Fields("id", "userName").Unique(),
+		index.Fields("id", "user_name").Unique(),
 	}
 }

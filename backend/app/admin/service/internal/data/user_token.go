@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofrs/uuid"
+	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/devexps/go-micro/middleware/authn/engine/jwt/v2"
 	"github.com/devexps/go-micro/v2/log"
 
-	"github.com/devexps/go-monolithic-demo/gen/api/go/common/authn"
 	userV1 "github.com/devexps/go-monolithic-demo/gen/api/go/user/service/v1"
 	v1 "github.com/devexps/go-monolithic-demo/gen/api/go/user_token/service/v1"
 )
@@ -36,7 +38,7 @@ func NewUserTokenRepo(data *Data, logger log.Logger) *UserTokenRepo {
 
 // GenerateToken .
 func (r *UserTokenRepo) GenerateToken(ctx context.Context, user *userV1.User) (*v1.TokenResponse, error) {
-	accessToken := r.createAccessJwtToken(user.GetId(), user.GetUserName())
+	accessToken := r.createAccessJwtToken(user.GetId())
 	if accessToken == "" {
 		return nil, v1.ErrorCreateAccessTokenFailed("create access token failed")
 	}
@@ -58,11 +60,39 @@ func (r *UserTokenRepo) GenerateToken(ctx context.Context, user *userV1.User) (*
 	}, nil
 }
 
-func (r *UserTokenRepo) createAccessJwtToken(userId, userName string) string {
-	principal := &authn.Claims{
-		Subject:  userName,
-		UserId:   userId,
-		UserName: userName,
+func (r *UserTokenRepo) RemoveToken(ctx context.Context, user *userV1.User) (*emptypb.Empty, error) {
+	if err := r.deleteAccessTokenFromRedis(ctx, user.GetId()); err != nil {
+		return nil, v1.ErrorRemoveAccessTokenFailed("remove access token failed")
+	}
+	if err := r.deleteRefreshTokenFromRedis(ctx, user.GetId()); err != nil {
+		return nil, v1.ErrorRemoveRefreshTokenFailed("remove refresh token failed")
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (r *UserTokenRepo) GetRefreshToken(ctx context.Context, user *userV1.User) (*v1.TokenResponse, error) {
+	return &v1.TokenResponse{
+		RefreshToken: r.getRefreshTokenFromRedis(ctx, user.GetId()),
+	}, nil
+}
+
+func (r *UserTokenRepo) GenerateAccessToken(ctx context.Context, user *userV1.User) (*v1.TokenResponse, error) {
+	accessToken := r.createAccessJwtToken(user.GetId())
+	if accessToken == "" {
+		return nil, v1.ErrorCreateAccessTokenFailed("create access token failed")
+	}
+	if err := r.setAccessTokenToRedis(ctx, user.GetId(), accessToken, 0); err != nil {
+		r.log.Errorf("GenerateAccessToken store to redis failed, err=%v", err)
+		return nil, v1.ErrorStoreRedisFailed("store to redis failed")
+	}
+	return &v1.TokenResponse{
+		AccessToken: accessToken,
+	}, nil
+}
+
+func (r *UserTokenRepo) createAccessJwtToken(userId string) string {
+	principal := &jwt.Claims{
+		Subject: userId,
 	}
 	signedToken, err := r.data.authenticator.CreateIdentity(principal)
 	if err != nil {
@@ -84,4 +114,26 @@ func (r *UserTokenRepo) setAccessTokenToRedis(ctx context.Context, userId, token
 func (r *UserTokenRepo) setRefreshTokenToRedis(ctx context.Context, userId, token string, expires int32) error {
 	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
 	return r.data.rdb.Set(ctx, key, token, time.Duration(expires)).Err()
+}
+
+func (r *UserTokenRepo) deleteAccessTokenFromRedis(ctx context.Context, userId string) error {
+	key := fmt.Sprintf("%s%s", userAccessTokenKeyPrefix, userId)
+	return r.data.rdb.Del(ctx, key).Err()
+}
+
+func (r *UserTokenRepo) deleteRefreshTokenFromRedis(ctx context.Context, userId string) error {
+	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
+	return r.data.rdb.Del(ctx, key).Err()
+}
+
+func (r *UserTokenRepo) getRefreshTokenFromRedis(ctx context.Context, userId string) string {
+	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
+	result, err := r.data.rdb.Get(ctx, key).Result()
+	if err != nil {
+		if err != redis.Nil {
+			r.log.Errorf("getRefreshTokenFromRedis get redis user refresh token failed, err=%v", err)
+		}
+		return ""
+	}
+	return result
 }

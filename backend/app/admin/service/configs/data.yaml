@@ -2,7 +2,7 @@ data:
   database:
     driver: "postgres"
     source: "host=localhost port=5432 user=micro password=micro@123 dbname=micro sslmode=disable"
-    migrate: false
+    migrate: true
     debug: false
     max_idle_connections: 25
     max_open_connections: 25

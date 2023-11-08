@@ -24,3 +24,15 @@ func IsNotLoggedIn(err error) bool {
 func ErrorNotLoggedIn(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, AdminErrorReason_NOT_LOGGED_IN.String(), fmt.Sprintf(format, args...))
 }
+
+func IsInvalidToken(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AdminErrorReason_INVALID_TOKEN.String() && e.Code == 402
+}
+
+func ErrorInvalidToken(format string, args ...interface{}) *errors.Error {
+	return errors.New(402, AdminErrorReason_INVALID_TOKEN.String(), fmt.Sprintf(format, args...))
+}

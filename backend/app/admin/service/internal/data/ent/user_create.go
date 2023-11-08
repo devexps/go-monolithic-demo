@@ -22,7 +22,7 @@ type UserCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (uc *UserCreate) SetUserName(s string) *UserCreate {
 	uc.mutation.SetUserName(s)
 	return uc
@@ -34,15 +34,31 @@ func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	return uc
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (uc *UserCreate) SetNickName(s string) *UserCreate {
 	uc.mutation.SetNickName(s)
 	return uc
 }
 
-// SetRealName sets the "realName" field.
+// SetNillableNickName sets the "nick_name" field if the given value is not nil.
+func (uc *UserCreate) SetNillableNickName(s *string) *UserCreate {
+	if s != nil {
+		uc.SetNickName(*s)
+	}
+	return uc
+}
+
+// SetRealName sets the "real_name" field.
 func (uc *UserCreate) SetRealName(s string) *UserCreate {
 	uc.mutation.SetRealName(s)
+	return uc
+}
+
+// SetNillableRealName sets the "real_name" field if the given value is not nil.
+func (uc *UserCreate) SetNillableRealName(s *string) *UserCreate {
+	if s != nil {
+		uc.SetRealName(*s)
+	}
 	return uc
 }
 
@@ -52,9 +68,25 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	return uc
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uc *UserCreate) SetNillableEmail(s *string) *UserCreate {
+	if s != nil {
+		uc.SetEmail(*s)
+	}
+	return uc
+}
+
 // SetPhone sets the "phone" field.
 func (uc *UserCreate) SetPhone(s string) *UserCreate {
 	uc.mutation.SetPhone(s)
+	return uc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePhone(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPhone(*s)
+	}
 	return uc
 }
 
@@ -141,11 +173,11 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UserName(); !ok {
-		return &ValidationError{Name: "userName", err: errors.New(`ent: missing required field "User.userName"`)}
+		return &ValidationError{Name: "user_name", err: errors.New(`ent: missing required field "User.user_name"`)}
 	}
 	if v, ok := uc.mutation.UserName(); ok {
 		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "userName", err: fmt.Errorf(`ent: validator failed for field "User.userName": %w`, err)}
+			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
 		}
 	}
 	if _, ok := uc.mutation.Password(); !ok {
@@ -156,32 +188,20 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.NickName(); !ok {
-		return &ValidationError{Name: "nickName", err: errors.New(`ent: missing required field "User.nickName"`)}
-	}
 	if v, ok := uc.mutation.NickName(); ok {
 		if err := user.NickNameValidator(v); err != nil {
-			return &ValidationError{Name: "nickName", err: fmt.Errorf(`ent: validator failed for field "User.nickName": %w`, err)}
+			return &ValidationError{Name: "nick_name", err: fmt.Errorf(`ent: validator failed for field "User.nick_name": %w`, err)}
 		}
-	}
-	if _, ok := uc.mutation.RealName(); !ok {
-		return &ValidationError{Name: "realName", err: errors.New(`ent: missing required field "User.realName"`)}
 	}
 	if v, ok := uc.mutation.RealName(); ok {
 		if err := user.RealNameValidator(v); err != nil {
-			return &ValidationError{Name: "realName", err: fmt.Errorf(`ent: validator failed for field "User.realName": %w`, err)}
+			return &ValidationError{Name: "real_name", err: fmt.Errorf(`ent: validator failed for field "User.real_name": %w`, err)}
 		}
-	}
-	if _, ok := uc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
 	if v, ok := uc.mutation.Email(); ok {
 		if err := user.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
-	}
-	if _, ok := uc.mutation.Phone(); !ok {
-		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "User.phone"`)}
 	}
 	if v, ok := uc.mutation.Phone(); ok {
 		if err := user.PhoneValidator(v); err != nil {
@@ -332,13 +352,13 @@ type (
 	}
 )
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (u *UserUpsert) SetUserName(v string) *UserUpsert {
 	u.Set(user.FieldUserName, v)
 	return u
 }
 
-// UpdateUserName sets the "userName" field to the value that was provided on create.
+// UpdateUserName sets the "user_name" field to the value that was provided on create.
 func (u *UserUpsert) UpdateUserName() *UserUpsert {
 	u.SetExcluded(user.FieldUserName)
 	return u
@@ -356,27 +376,39 @@ func (u *UserUpsert) UpdatePassword() *UserUpsert {
 	return u
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (u *UserUpsert) SetNickName(v string) *UserUpsert {
 	u.Set(user.FieldNickName, v)
 	return u
 }
 
-// UpdateNickName sets the "nickName" field to the value that was provided on create.
+// UpdateNickName sets the "nick_name" field to the value that was provided on create.
 func (u *UserUpsert) UpdateNickName() *UserUpsert {
 	u.SetExcluded(user.FieldNickName)
 	return u
 }
 
-// SetRealName sets the "realName" field.
+// ClearNickName clears the value of the "nick_name" field.
+func (u *UserUpsert) ClearNickName() *UserUpsert {
+	u.SetNull(user.FieldNickName)
+	return u
+}
+
+// SetRealName sets the "real_name" field.
 func (u *UserUpsert) SetRealName(v string) *UserUpsert {
 	u.Set(user.FieldRealName, v)
 	return u
 }
 
-// UpdateRealName sets the "realName" field to the value that was provided on create.
+// UpdateRealName sets the "real_name" field to the value that was provided on create.
 func (u *UserUpsert) UpdateRealName() *UserUpsert {
 	u.SetExcluded(user.FieldRealName)
+	return u
+}
+
+// ClearRealName clears the value of the "real_name" field.
+func (u *UserUpsert) ClearRealName() *UserUpsert {
+	u.SetNull(user.FieldRealName)
 	return u
 }
 
@@ -392,6 +424,12 @@ func (u *UserUpsert) UpdateEmail() *UserUpsert {
 	return u
 }
 
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsert) ClearEmail() *UserUpsert {
+	u.SetNull(user.FieldEmail)
+	return u
+}
+
 // SetPhone sets the "phone" field.
 func (u *UserUpsert) SetPhone(v string) *UserUpsert {
 	u.Set(user.FieldPhone, v)
@@ -401,6 +439,12 @@ func (u *UserUpsert) SetPhone(v string) *UserUpsert {
 // UpdatePhone sets the "phone" field to the value that was provided on create.
 func (u *UserUpsert) UpdatePhone() *UserUpsert {
 	u.SetExcluded(user.FieldPhone)
+	return u
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserUpsert) ClearPhone() *UserUpsert {
+	u.SetNull(user.FieldPhone)
 	return u
 }
 
@@ -454,14 +498,14 @@ func (u *UserUpsertOne) Update(set func(*UserUpsert)) *UserUpsertOne {
 	return u
 }
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (u *UserUpsertOne) SetUserName(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetUserName(v)
 	})
 }
 
-// UpdateUserName sets the "userName" field to the value that was provided on create.
+// UpdateUserName sets the "user_name" field to the value that was provided on create.
 func (u *UserUpsertOne) UpdateUserName() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUserName()
@@ -482,31 +526,45 @@ func (u *UserUpsertOne) UpdatePassword() *UserUpsertOne {
 	})
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (u *UserUpsertOne) SetNickName(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetNickName(v)
 	})
 }
 
-// UpdateNickName sets the "nickName" field to the value that was provided on create.
+// UpdateNickName sets the "nick_name" field to the value that was provided on create.
 func (u *UserUpsertOne) UpdateNickName() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateNickName()
 	})
 }
 
-// SetRealName sets the "realName" field.
+// ClearNickName clears the value of the "nick_name" field.
+func (u *UserUpsertOne) ClearNickName() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearNickName()
+	})
+}
+
+// SetRealName sets the "real_name" field.
 func (u *UserUpsertOne) SetRealName(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetRealName(v)
 	})
 }
 
-// UpdateRealName sets the "realName" field to the value that was provided on create.
+// UpdateRealName sets the "real_name" field to the value that was provided on create.
 func (u *UserUpsertOne) UpdateRealName() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRealName()
+	})
+}
+
+// ClearRealName clears the value of the "real_name" field.
+func (u *UserUpsertOne) ClearRealName() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearRealName()
 	})
 }
 
@@ -524,6 +582,13 @@ func (u *UserUpsertOne) UpdateEmail() *UserUpsertOne {
 	})
 }
 
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertOne) ClearEmail() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
+	})
+}
+
 // SetPhone sets the "phone" field.
 func (u *UserUpsertOne) SetPhone(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
@@ -535,6 +600,13 @@ func (u *UserUpsertOne) SetPhone(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdatePhone() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserUpsertOne) ClearPhone() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPhone()
 	})
 }
 
@@ -753,14 +825,14 @@ func (u *UserUpsertBulk) Update(set func(*UserUpsert)) *UserUpsertBulk {
 	return u
 }
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (u *UserUpsertBulk) SetUserName(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetUserName(v)
 	})
 }
 
-// UpdateUserName sets the "userName" field to the value that was provided on create.
+// UpdateUserName sets the "user_name" field to the value that was provided on create.
 func (u *UserUpsertBulk) UpdateUserName() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUserName()
@@ -781,31 +853,45 @@ func (u *UserUpsertBulk) UpdatePassword() *UserUpsertBulk {
 	})
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (u *UserUpsertBulk) SetNickName(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetNickName(v)
 	})
 }
 
-// UpdateNickName sets the "nickName" field to the value that was provided on create.
+// UpdateNickName sets the "nick_name" field to the value that was provided on create.
 func (u *UserUpsertBulk) UpdateNickName() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateNickName()
 	})
 }
 
-// SetRealName sets the "realName" field.
+// ClearNickName clears the value of the "nick_name" field.
+func (u *UserUpsertBulk) ClearNickName() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearNickName()
+	})
+}
+
+// SetRealName sets the "real_name" field.
 func (u *UserUpsertBulk) SetRealName(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetRealName(v)
 	})
 }
 
-// UpdateRealName sets the "realName" field to the value that was provided on create.
+// UpdateRealName sets the "real_name" field to the value that was provided on create.
 func (u *UserUpsertBulk) UpdateRealName() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRealName()
+	})
+}
+
+// ClearRealName clears the value of the "real_name" field.
+func (u *UserUpsertBulk) ClearRealName() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearRealName()
 	})
 }
 
@@ -823,6 +909,13 @@ func (u *UserUpsertBulk) UpdateEmail() *UserUpsertBulk {
 	})
 }
 
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertBulk) ClearEmail() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
+	})
+}
+
 // SetPhone sets the "phone" field.
 func (u *UserUpsertBulk) SetPhone(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
@@ -834,6 +927,13 @@ func (u *UserUpsertBulk) SetPhone(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdatePhone() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserUpsertBulk) ClearPhone() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPhone()
 	})
 }
 

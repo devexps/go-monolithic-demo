@@ -7,13 +7,13 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUserName holds the string denoting the username field in the database.
+	// FieldUserName holds the string denoting the user_name field in the database.
 	FieldUserName = "user_name"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
-	// FieldNickName holds the string denoting the nickname field in the database.
+	// FieldNickName holds the string denoting the nick_name field in the database.
 	FieldNickName = "nick_name"
-	// FieldRealName holds the string denoting the realname field in the database.
+	// FieldRealName holds the string denoting the real_name field in the database.
 	FieldRealName = "real_name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
@@ -45,13 +45,13 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// UserNameValidator is a validator for the "userName" field. It is called by the builders before save.
+	// UserNameValidator is a validator for the "user_name" field. It is called by the builders before save.
 	UserNameValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
-	// NickNameValidator is a validator for the "nickName" field. It is called by the builders before save.
+	// NickNameValidator is a validator for the "nick_name" field. It is called by the builders before save.
 	NickNameValidator func(string) error
-	// RealNameValidator is a validator for the "realName" field. It is called by the builders before save.
+	// RealNameValidator is a validator for the "real_name" field. It is called by the builders before save.
 	RealNameValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error

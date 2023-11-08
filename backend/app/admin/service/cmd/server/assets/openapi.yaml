@@ -330,6 +330,8 @@ components:
         RefreshTokenResponse:
             type: object
             properties:
+                access_token:
+                    type: string
                 refresh_token:
                     type: string
                 grand_type:

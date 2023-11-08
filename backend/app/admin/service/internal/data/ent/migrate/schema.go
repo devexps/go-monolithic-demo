@@ -14,10 +14,10 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "user_name", Type: field.TypeString, Unique: true, Size: 50},
 		{Name: "password", Type: field.TypeString, Size: 255},
-		{Name: "nick_name", Type: field.TypeString, Size: 128},
-		{Name: "real_name", Type: field.TypeString, Size: 128},
-		{Name: "email", Type: field.TypeString, Size: 127},
-		{Name: "phone", Type: field.TypeString, Size: 11},
+		{Name: "nick_name", Type: field.TypeString, Nullable: true, Size: 128},
+		{Name: "real_name", Type: field.TypeString, Nullable: true, Size: 128},
+		{Name: "email", Type: field.TypeString, Nullable: true, Size: 127},
+		{Name: "phone", Type: field.TypeString, Nullable: true, Size: 11},
 	}
 	// UserTable holds the schema information for the "user" table.
 	UserTable = &schema.Table{

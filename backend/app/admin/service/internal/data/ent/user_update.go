@@ -27,7 +27,7 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return uu
 }
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (uu *UserUpdate) SetUserName(s string) *UserUpdate {
 	uu.mutation.SetUserName(s)
 	return uu
@@ -39,15 +39,43 @@ func (uu *UserUpdate) SetPassword(s string) *UserUpdate {
 	return uu
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (uu *UserUpdate) SetNickName(s string) *UserUpdate {
 	uu.mutation.SetNickName(s)
 	return uu
 }
 
-// SetRealName sets the "realName" field.
+// SetNillableNickName sets the "nick_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNickName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNickName(*s)
+	}
+	return uu
+}
+
+// ClearNickName clears the value of the "nick_name" field.
+func (uu *UserUpdate) ClearNickName() *UserUpdate {
+	uu.mutation.ClearNickName()
+	return uu
+}
+
+// SetRealName sets the "real_name" field.
 func (uu *UserUpdate) SetRealName(s string) *UserUpdate {
 	uu.mutation.SetRealName(s)
+	return uu
+}
+
+// SetNillableRealName sets the "real_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRealName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetRealName(*s)
+	}
+	return uu
+}
+
+// ClearRealName clears the value of the "real_name" field.
+func (uu *UserUpdate) ClearRealName() *UserUpdate {
+	uu.mutation.ClearRealName()
 	return uu
 }
 
@@ -57,9 +85,37 @@ func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableEmail(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetEmail(*s)
+	}
+	return uu
+}
+
+// ClearEmail clears the value of the "email" field.
+func (uu *UserUpdate) ClearEmail() *UserUpdate {
+	uu.mutation.ClearEmail()
+	return uu
+}
+
 // SetPhone sets the "phone" field.
 func (uu *UserUpdate) SetPhone(s string) *UserUpdate {
 	uu.mutation.SetPhone(s)
+	return uu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePhone(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPhone(*s)
+	}
+	return uu
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (uu *UserUpdate) ClearPhone() *UserUpdate {
+	uu.mutation.ClearPhone()
 	return uu
 }
 
@@ -132,7 +188,7 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 func (uu *UserUpdate) check() error {
 	if v, ok := uu.mutation.UserName(); ok {
 		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "userName", err: fmt.Errorf(`ent: validator failed for field "User.userName": %w`, err)}
+			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
 		}
 	}
 	if v, ok := uu.mutation.Password(); ok {
@@ -142,12 +198,12 @@ func (uu *UserUpdate) check() error {
 	}
 	if v, ok := uu.mutation.NickName(); ok {
 		if err := user.NickNameValidator(v); err != nil {
-			return &ValidationError{Name: "nickName", err: fmt.Errorf(`ent: validator failed for field "User.nickName": %w`, err)}
+			return &ValidationError{Name: "nick_name", err: fmt.Errorf(`ent: validator failed for field "User.nick_name": %w`, err)}
 		}
 	}
 	if v, ok := uu.mutation.RealName(); ok {
 		if err := user.RealNameValidator(v); err != nil {
-			return &ValidationError{Name: "realName", err: fmt.Errorf(`ent: validator failed for field "User.realName": %w`, err)}
+			return &ValidationError{Name: "real_name", err: fmt.Errorf(`ent: validator failed for field "User.real_name": %w`, err)}
 		}
 	}
 	if v, ok := uu.mutation.Email(); ok {
@@ -202,10 +258,22 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldNickName,
 		})
 	}
+	if uu.mutation.NickNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldNickName,
+		})
+	}
 	if value, ok := uu.mutation.RealName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldRealName,
+		})
+	}
+	if uu.mutation.RealNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldRealName,
 		})
 	}
@@ -216,10 +284,22 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldEmail,
 		})
 	}
+	if uu.mutation.EmailCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldEmail,
+		})
+	}
 	if value, ok := uu.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldPhone,
+		})
+	}
+	if uu.mutation.PhoneCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldPhone,
 		})
 	}
@@ -242,7 +322,7 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
-// SetUserName sets the "userName" field.
+// SetUserName sets the "user_name" field.
 func (uuo *UserUpdateOne) SetUserName(s string) *UserUpdateOne {
 	uuo.mutation.SetUserName(s)
 	return uuo
@@ -254,15 +334,43 @@ func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
 	return uuo
 }
 
-// SetNickName sets the "nickName" field.
+// SetNickName sets the "nick_name" field.
 func (uuo *UserUpdateOne) SetNickName(s string) *UserUpdateOne {
 	uuo.mutation.SetNickName(s)
 	return uuo
 }
 
-// SetRealName sets the "realName" field.
+// SetNillableNickName sets the "nick_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNickName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNickName(*s)
+	}
+	return uuo
+}
+
+// ClearNickName clears the value of the "nick_name" field.
+func (uuo *UserUpdateOne) ClearNickName() *UserUpdateOne {
+	uuo.mutation.ClearNickName()
+	return uuo
+}
+
+// SetRealName sets the "real_name" field.
 func (uuo *UserUpdateOne) SetRealName(s string) *UserUpdateOne {
 	uuo.mutation.SetRealName(s)
+	return uuo
+}
+
+// SetNillableRealName sets the "real_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRealName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetRealName(*s)
+	}
+	return uuo
+}
+
+// ClearRealName clears the value of the "real_name" field.
+func (uuo *UserUpdateOne) ClearRealName() *UserUpdateOne {
+	uuo.mutation.ClearRealName()
 	return uuo
 }
 
@@ -272,9 +380,37 @@ func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableEmail(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetEmail(*s)
+	}
+	return uuo
+}
+
+// ClearEmail clears the value of the "email" field.
+func (uuo *UserUpdateOne) ClearEmail() *UserUpdateOne {
+	uuo.mutation.ClearEmail()
+	return uuo
+}
+
 // SetPhone sets the "phone" field.
 func (uuo *UserUpdateOne) SetPhone(s string) *UserUpdateOne {
 	uuo.mutation.SetPhone(s)
+	return uuo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePhone(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPhone(*s)
+	}
+	return uuo
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (uuo *UserUpdateOne) ClearPhone() *UserUpdateOne {
+	uuo.mutation.ClearPhone()
 	return uuo
 }
 
@@ -360,7 +496,7 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 func (uuo *UserUpdateOne) check() error {
 	if v, ok := uuo.mutation.UserName(); ok {
 		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "userName", err: fmt.Errorf(`ent: validator failed for field "User.userName": %w`, err)}
+			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
 		}
 	}
 	if v, ok := uuo.mutation.Password(); ok {
@@ -370,12 +506,12 @@ func (uuo *UserUpdateOne) check() error {
 	}
 	if v, ok := uuo.mutation.NickName(); ok {
 		if err := user.NickNameValidator(v); err != nil {
-			return &ValidationError{Name: "nickName", err: fmt.Errorf(`ent: validator failed for field "User.nickName": %w`, err)}
+			return &ValidationError{Name: "nick_name", err: fmt.Errorf(`ent: validator failed for field "User.nick_name": %w`, err)}
 		}
 	}
 	if v, ok := uuo.mutation.RealName(); ok {
 		if err := user.RealNameValidator(v); err != nil {
-			return &ValidationError{Name: "realName", err: fmt.Errorf(`ent: validator failed for field "User.realName": %w`, err)}
+			return &ValidationError{Name: "real_name", err: fmt.Errorf(`ent: validator failed for field "User.real_name": %w`, err)}
 		}
 	}
 	if v, ok := uuo.mutation.Email(); ok {
@@ -447,10 +583,22 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldNickName,
 		})
 	}
+	if uuo.mutation.NickNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldNickName,
+		})
+	}
 	if value, ok := uuo.mutation.RealName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldRealName,
+		})
+	}
+	if uuo.mutation.RealNameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldRealName,
 		})
 	}
@@ -461,10 +609,22 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldEmail,
 		})
 	}
+	if uuo.mutation.EmailCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldEmail,
+		})
+	}
 	if value, ok := uuo.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldPhone,
+		})
+	}
+	if uuo.mutation.PhoneCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldPhone,
 		})
 	}

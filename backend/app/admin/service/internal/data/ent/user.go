@@ -16,14 +16,14 @@ type User struct {
 	// ID of the ent.
 	// id
 	ID string `json:"id,omitempty"`
-	// userName
-	UserName string `json:"userName,omitempty"`
+	// user_name
+	UserName string `json:"user_name,omitempty"`
 	// password
 	Password string `json:"password,omitempty"`
-	// nickName
-	NickName string `json:"nickName,omitempty"`
-	// realName
-	RealName string `json:"realName,omitempty"`
+	// nick_name
+	NickName string `json:"nick_name,omitempty"`
+	// real_name
+	RealName string `json:"real_name,omitempty"`
 	// email
 	Email string `json:"email,omitempty"`
 	// phone
@@ -60,7 +60,7 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			}
 		case user.FieldUserName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field userName", values[i])
+				return fmt.Errorf("unexpected type %T for field user_name", values[i])
 			} else if value.Valid {
 				u.UserName = value.String
 			}
@@ -72,13 +72,13 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			}
 		case user.FieldNickName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field nickName", values[i])
+				return fmt.Errorf("unexpected type %T for field nick_name", values[i])
 			} else if value.Valid {
 				u.NickName = value.String
 			}
 		case user.FieldRealName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field realName", values[i])
+				return fmt.Errorf("unexpected type %T for field real_name", values[i])
 			} else if value.Valid {
 				u.RealName = value.String
 			}
@@ -122,16 +122,16 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
-	builder.WriteString("userName=")
+	builder.WriteString("user_name=")
 	builder.WriteString(u.UserName)
 	builder.WriteString(", ")
 	builder.WriteString("password=")
 	builder.WriteString(u.Password)
 	builder.WriteString(", ")
-	builder.WriteString("nickName=")
+	builder.WriteString("nick_name=")
 	builder.WriteString(u.NickName)
 	builder.WriteString(", ")
-	builder.WriteString("realName=")
+	builder.WriteString("real_name=")
 	builder.WriteString(u.RealName)
 	builder.WriteString(", ")
 	builder.WriteString("email=")

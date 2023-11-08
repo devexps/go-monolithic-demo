@@ -11,7 +11,6 @@ import (
 // is compatible with the micro package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-// 401 code
 func IsTokenNotFound(err error) bool {
 	if err == nil {
 		return false
@@ -20,12 +19,10 @@ func IsTokenNotFound(err error) bool {
 	return e.Reason == UserTokenErrorReason_TOKEN_NOT_FOUND.String() && e.Code == 401
 }
 
-// 401 code
 func ErrorTokenNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UserTokenErrorReason_TOKEN_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
-// 402 code
 func IsCreateAccessTokenFailed(err error) bool {
 	if err == nil {
 		return false
@@ -34,12 +31,10 @@ func IsCreateAccessTokenFailed(err error) bool {
 	return e.Reason == UserTokenErrorReason_CREATE_ACCESS_TOKEN_FAILED.String() && e.Code == 402
 }
 
-// 402 code
 func ErrorCreateAccessTokenFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(402, UserTokenErrorReason_CREATE_ACCESS_TOKEN_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
-// 403 code
 func IsStoreRedisFailed(err error) bool {
 	if err == nil {
 		return false
@@ -48,12 +43,10 @@ func IsStoreRedisFailed(err error) bool {
 	return e.Reason == UserTokenErrorReason_STORE_REDIS_FAILED.String() && e.Code == 403
 }
 
-// 403 code
 func ErrorStoreRedisFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(403, UserTokenErrorReason_STORE_REDIS_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
-// 404 code
 func IsCreateRefreshTokenFailed(err error) bool {
 	if err == nil {
 		return false
@@ -62,7 +55,30 @@ func IsCreateRefreshTokenFailed(err error) bool {
 	return e.Reason == UserTokenErrorReason_CREATE_REFRESH_TOKEN_FAILED.String() && e.Code == 404
 }
 
-// 404 code
 func ErrorCreateRefreshTokenFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, UserTokenErrorReason_CREATE_REFRESH_TOKEN_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRemoveAccessTokenFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserTokenErrorReason_REMOVE_ACCESS_TOKEN_FAILED.String() && e.Code == 405
+}
+
+func ErrorRemoveAccessTokenFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(405, UserTokenErrorReason_REMOVE_ACCESS_TOKEN_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRemoveRefreshTokenFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserTokenErrorReason_REMOVE_REFRESH_TOKEN_FAILED.String() && e.Code == 406
+}
+
+func ErrorRemoveRefreshTokenFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(406, UserTokenErrorReason_REMOVE_REFRESH_TOKEN_FAILED.String(), fmt.Sprintf(format, args...))
 }

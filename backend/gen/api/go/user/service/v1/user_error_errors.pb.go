@@ -11,7 +11,6 @@ import (
 // is compatible with the micro package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-// 401 code
 func IsUserNotExist(err error) bool {
 	if err == nil {
 		return false
@@ -20,12 +19,10 @@ func IsUserNotExist(err error) bool {
 	return e.Reason == UserErrorReason_USER_NOT_EXIST.String() && e.Code == 401
 }
 
-// 401 code
 func ErrorUserNotExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UserErrorReason_USER_NOT_EXIST.String(), fmt.Sprintf(format, args...))
 }
 
-// 402 code
 func IsInvalidPassword(err error) bool {
 	if err == nil {
 		return false
@@ -34,7 +31,18 @@ func IsInvalidPassword(err error) bool {
 	return e.Reason == UserErrorReason_INVALID_PASSWORD.String() && e.Code == 402
 }
 
-// 402 code
 func ErrorInvalidPassword(format string, args ...interface{}) *errors.Error {
 	return errors.New(402, UserErrorReason_INVALID_PASSWORD.String(), fmt.Sprintf(format, args...))
+}
+
+func IsQueryDataFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_QUERY_DATA_FAILED.String() && e.Code == 403
+}
+
+func ErrorQueryDataFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, UserErrorReason_QUERY_DATA_FAILED.String(), fmt.Sprintf(format, args...))
 }

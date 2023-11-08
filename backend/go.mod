@@ -2,10 +2,12 @@ module github.com/devexps/go-monolithic-demo
 
 go 1.18
 
+replace github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 => ../../go-micro/middleware/authn/engine/jwt
+
 require (
 	entgo.io/ent v0.11.0
 	github.com/devexps/go-bootstrap v1.0.0
-	github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-20231107084512-2d6ead0b2a51
+	github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-00010101000000-000000000000
 	github.com/devexps/go-micro/v2 v2.0.2
 	github.com/devexps/go-swagger-ui v0.0.0-20231102043114-64b07af220e0
 	github.com/devexps/go-utils v0.0.0-20231107074246-ff0cf7c90885

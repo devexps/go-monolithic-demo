@@ -82,7 +82,7 @@ func (f *UserFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(user.FieldID))
 }
 
-// WhereUserName applies the entql string predicate on the userName field.
+// WhereUserName applies the entql string predicate on the user_name field.
 func (f *UserFilter) WhereUserName(p entql.StringP) {
 	f.Where(p.Field(user.FieldUserName))
 }
@@ -92,12 +92,12 @@ func (f *UserFilter) WherePassword(p entql.StringP) {
 	f.Where(p.Field(user.FieldPassword))
 }
 
-// WhereNickName applies the entql string predicate on the nickName field.
+// WhereNickName applies the entql string predicate on the nick_name field.
 func (f *UserFilter) WhereNickName(p entql.StringP) {
 	f.Where(p.Field(user.FieldNickName))
 }
 
-// WhereRealName applies the entql string predicate on the realName field.
+// WhereRealName applies the entql string predicate on the real_name field.
 func (f *UserFilter) WhereRealName(p entql.StringP) {
 	f.Where(p.Field(user.FieldRealName))
 }
