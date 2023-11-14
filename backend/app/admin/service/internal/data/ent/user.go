@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/devexps/go-monolithic-demo/app/admin/service/internal/data/ent/user"
@@ -16,6 +17,16 @@ type User struct {
 	// ID of the ent.
 	// id
 	ID string `json:"id,omitempty"`
+	// create_by
+	CreateBy uint32 `json:"create_by,omitempty"`
+	// create_time
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// update_time
+	UpdateTime time.Time `json:"update_time,omitempty"`
+	// delete_time
+	DeleteTime time.Time `json:"delete_time,omitempty"`
+	// status
+	Status user.Status `json:"status,omitempty"`
 	// user_name
 	UserName string `json:"user_name,omitempty"`
 	// password
@@ -31,12 +42,16 @@ type User struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*User) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*User) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldUserName, user.FieldPassword, user.FieldNickName, user.FieldRealName, user.FieldEmail, user.FieldPhone:
+		case user.FieldCreateBy:
+			values[i] = new(sql.NullInt64)
+		case user.FieldID, user.FieldStatus, user.FieldUserName, user.FieldPassword, user.FieldNickName, user.FieldRealName, user.FieldEmail, user.FieldPhone:
 			values[i] = new(sql.NullString)
+		case user.FieldCreateTime, user.FieldUpdateTime, user.FieldDeleteTime:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -46,7 +61,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the User fields.
-func (u *User) assignValues(columns []string, values []interface{}) error {
+func (u *User) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -57,6 +72,36 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				u.ID = value.String
+			}
+		case user.FieldCreateBy:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field create_by", values[i])
+			} else if value.Valid {
+				u.CreateBy = uint32(value.Int64)
+			}
+		case user.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				u.CreateTime = value.Time
+			}
+		case user.FieldUpdateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+			} else if value.Valid {
+				u.UpdateTime = value.Time
+			}
+		case user.FieldDeleteTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field delete_time", values[i])
+			} else if value.Valid {
+				u.DeleteTime = value.Time
+			}
+		case user.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				u.Status = user.Status(value.String)
 			}
 		case user.FieldUserName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -103,7 +148,7 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (u *User) Update() *UserUpdateOne {
-	return (&UserClient{config: u.config}).UpdateOne(u)
+	return NewUserClient(u.config).UpdateOne(u)
 }
 
 // Unwrap unwraps the User entity that was returned from a transaction after it was closed,
@@ -122,6 +167,21 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString("create_by=")
+	builder.WriteString(fmt.Sprintf("%v", u.CreateBy))
+	builder.WriteString(", ")
+	builder.WriteString("create_time=")
+	builder.WriteString(u.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("update_time=")
+	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("delete_time=")
+	builder.WriteString(u.DeleteTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", u.Status))
+	builder.WriteString(", ")
 	builder.WriteString("user_name=")
 	builder.WriteString(u.UserName)
 	builder.WriteString(", ")
@@ -145,9 +205,3 @@ func (u *User) String() string {
 
 // Users is a parsable slice of User.
 type Users []*User
-
-func (u Users) config(cfg config) {
-	for _i := range u {
-		u[_i].config = cfg
-	}
-}

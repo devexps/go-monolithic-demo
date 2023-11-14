@@ -2,11 +2,25 @@
 
 package user
 
+import (
+	"fmt"
+)
+
 const (
 	// Label holds the string label denoting the user type in the database.
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreateBy holds the string denoting the create_by field in the database.
+	FieldCreateBy = "create_by"
+	// FieldCreateTime holds the string denoting the create_time field in the database.
+	FieldCreateTime = "create_time"
+	// FieldUpdateTime holds the string denoting the update_time field in the database.
+	FieldUpdateTime = "update_time"
+	// FieldDeleteTime holds the string denoting the delete_time field in the database.
+	FieldDeleteTime = "delete_time"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldUserName holds the string denoting the user_name field in the database.
 	FieldUserName = "user_name"
 	// FieldPassword holds the string denoting the password field in the database.
@@ -26,6 +40,11 @@ const (
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
+	FieldCreateBy,
+	FieldCreateTime,
+	FieldUpdateTime,
+	FieldDeleteTime,
+	FieldStatus,
 	FieldUserName,
 	FieldPassword,
 	FieldNickName,
@@ -60,3 +79,29 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusON is the default value of the Status enum.
+const DefaultStatus = StatusON
+
+// Status values.
+const (
+	StatusOFF Status = "OFF"
+	StatusON  Status = "ON"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusOFF, StatusON:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for status field: %q", s)
+	}
+}

@@ -25,12 +25,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			user.FieldUserName: {Type: field.TypeString, Column: user.FieldUserName},
-			user.FieldPassword: {Type: field.TypeString, Column: user.FieldPassword},
-			user.FieldNickName: {Type: field.TypeString, Column: user.FieldNickName},
-			user.FieldRealName: {Type: field.TypeString, Column: user.FieldRealName},
-			user.FieldEmail:    {Type: field.TypeString, Column: user.FieldEmail},
-			user.FieldPhone:    {Type: field.TypeString, Column: user.FieldPhone},
+			user.FieldCreateBy:   {Type: field.TypeUint32, Column: user.FieldCreateBy},
+			user.FieldCreateTime: {Type: field.TypeTime, Column: user.FieldCreateTime},
+			user.FieldUpdateTime: {Type: field.TypeTime, Column: user.FieldUpdateTime},
+			user.FieldDeleteTime: {Type: field.TypeTime, Column: user.FieldDeleteTime},
+			user.FieldStatus:     {Type: field.TypeEnum, Column: user.FieldStatus},
+			user.FieldUserName:   {Type: field.TypeString, Column: user.FieldUserName},
+			user.FieldPassword:   {Type: field.TypeString, Column: user.FieldPassword},
+			user.FieldNickName:   {Type: field.TypeString, Column: user.FieldNickName},
+			user.FieldRealName:   {Type: field.TypeString, Column: user.FieldRealName},
+			user.FieldEmail:      {Type: field.TypeString, Column: user.FieldEmail},
+			user.FieldPhone:      {Type: field.TypeString, Column: user.FieldPhone},
 		},
 	}
 	return graph
@@ -80,6 +85,31 @@ func (f *UserFilter) Where(p entql.P) {
 // WhereID applies the entql string predicate on the id field.
 func (f *UserFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(user.FieldID))
+}
+
+// WhereCreateBy applies the entql uint32 predicate on the create_by field.
+func (f *UserFilter) WhereCreateBy(p entql.Uint32P) {
+	f.Where(p.Field(user.FieldCreateBy))
+}
+
+// WhereCreateTime applies the entql time.Time predicate on the create_time field.
+func (f *UserFilter) WhereCreateTime(p entql.TimeP) {
+	f.Where(p.Field(user.FieldCreateTime))
+}
+
+// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
+func (f *UserFilter) WhereUpdateTime(p entql.TimeP) {
+	f.Where(p.Field(user.FieldUpdateTime))
+}
+
+// WhereDeleteTime applies the entql time.Time predicate on the delete_time field.
+func (f *UserFilter) WhereDeleteTime(p entql.TimeP) {
+	f.Where(p.Field(user.FieldDeleteTime))
+}
+
+// WhereStatus applies the entql string predicate on the status field.
+func (f *UserFilter) WhereStatus(p entql.StringP) {
+	f.Where(p.Field(user.FieldStatus))
 }
 
 // WhereUserName applies the entql string predicate on the user_name field.

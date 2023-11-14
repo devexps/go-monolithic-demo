@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/devexps/go-utils/entgo/mixin"
 	"regexp"
 )
 
@@ -29,10 +30,10 @@ func (User) Annotations() []schema.Annotation {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").
-			Comment("id").
-			Unique().
-			MaxLen(36),
+		//field.String("id").
+		//	Comment("id").
+		//	Unique().
+		//	MaxLen(36),
 		field.String("user_name").
 			Comment("user_name").
 			Unique().
@@ -60,6 +61,16 @@ func (User) Fields() []ent.Field {
 	}
 }
 
+// Mixin of the User.
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixin.StringId{},
+		mixin.CreateBy{},
+		mixin.Time{},
+		mixin.SwitchStatus{},
+	}
+}
+
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return nil
@@ -68,7 +79,6 @@ func (User) Edges() []ent.Edge {
 // Indexes of the User.
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("id").Unique(),
 		index.Fields("id", "user_name").Unique(),
 	}
 }

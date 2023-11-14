@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -17,13 +18,101 @@ import (
 // UserUpdate is the builder for updating User entities.
 type UserUpdate struct {
 	config
-	hooks    []Hook
-	mutation *UserMutation
+	hooks     []Hook
+	mutation  *UserMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
 func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	uu.mutation.Where(ps...)
+	return uu
+}
+
+// SetCreateBy sets the "create_by" field.
+func (uu *UserUpdate) SetCreateBy(u uint32) *UserUpdate {
+	uu.mutation.ResetCreateBy()
+	uu.mutation.SetCreateBy(u)
+	return uu
+}
+
+// SetNillableCreateBy sets the "create_by" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableCreateBy(u *uint32) *UserUpdate {
+	if u != nil {
+		uu.SetCreateBy(*u)
+	}
+	return uu
+}
+
+// AddCreateBy adds u to the "create_by" field.
+func (uu *UserUpdate) AddCreateBy(u int32) *UserUpdate {
+	uu.mutation.AddCreateBy(u)
+	return uu
+}
+
+// ClearCreateBy clears the value of the "create_by" field.
+func (uu *UserUpdate) ClearCreateBy() *UserUpdate {
+	uu.mutation.ClearCreateBy()
+	return uu
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (uu *UserUpdate) SetUpdateTime(t time.Time) *UserUpdate {
+	uu.mutation.SetUpdateTime(t)
+	return uu
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableUpdateTime(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetUpdateTime(*t)
+	}
+	return uu
+}
+
+// ClearUpdateTime clears the value of the "update_time" field.
+func (uu *UserUpdate) ClearUpdateTime() *UserUpdate {
+	uu.mutation.ClearUpdateTime()
+	return uu
+}
+
+// SetDeleteTime sets the "delete_time" field.
+func (uu *UserUpdate) SetDeleteTime(t time.Time) *UserUpdate {
+	uu.mutation.SetDeleteTime(t)
+	return uu
+}
+
+// SetNillableDeleteTime sets the "delete_time" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableDeleteTime(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetDeleteTime(*t)
+	}
+	return uu
+}
+
+// ClearDeleteTime clears the value of the "delete_time" field.
+func (uu *UserUpdate) ClearDeleteTime() *UserUpdate {
+	uu.mutation.ClearDeleteTime()
+	return uu
+}
+
+// SetStatus sets the "status" field.
+func (uu *UserUpdate) SetStatus(u user.Status) *UserUpdate {
+	uu.mutation.SetStatus(u)
+	return uu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableStatus(u *user.Status) *UserUpdate {
+	if u != nil {
+		uu.SetStatus(*u)
+	}
+	return uu
+}
+
+// ClearStatus clears the value of the "status" field.
+func (uu *UserUpdate) ClearStatus() *UserUpdate {
+	uu.mutation.ClearStatus()
 	return uu
 }
 
@@ -126,40 +215,7 @@ func (uu *UserUpdate) Mutation() *UserMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(uu.hooks) == 0 {
-		if err = uu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = uu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uu.check(); err != nil {
-				return 0, err
-			}
-			uu.mutation = mutation
-			affected, err = uu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(uu.hooks) - 1; i >= 0; i-- {
-			if uu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, uu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserMutation](ctx, uu.sqlSave, uu.mutation, uu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -186,6 +242,11 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (uu *UserUpdate) check() error {
+	if v, ok := uu.mutation.Status(); ok {
+		if err := user.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
+		}
+	}
 	if v, ok := uu.mutation.UserName(); ok {
 		if err := user.UserNameValidator(v); err != nil {
 			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
@@ -219,17 +280,17 @@ func (uu *UserUpdate) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (uu *UserUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserUpdate {
+	uu.modifiers = append(uu.modifiers, modifiers...)
+	return uu
+}
+
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   user.Table,
-			Columns: user.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: user.FieldID,
-			},
-		},
+	if err := uu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -237,72 +298,67 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := uu.mutation.CreateBy(); ok {
+		_spec.SetField(user.FieldCreateBy, field.TypeUint32, value)
+	}
+	if value, ok := uu.mutation.AddedCreateBy(); ok {
+		_spec.AddField(user.FieldCreateBy, field.TypeUint32, value)
+	}
+	if uu.mutation.CreateByCleared() {
+		_spec.ClearField(user.FieldCreateBy, field.TypeUint32)
+	}
+	if uu.mutation.CreateTimeCleared() {
+		_spec.ClearField(user.FieldCreateTime, field.TypeTime)
+	}
+	if value, ok := uu.mutation.UpdateTime(); ok {
+		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
+	}
+	if uu.mutation.UpdateTimeCleared() {
+		_spec.ClearField(user.FieldUpdateTime, field.TypeTime)
+	}
+	if value, ok := uu.mutation.DeleteTime(); ok {
+		_spec.SetField(user.FieldDeleteTime, field.TypeTime, value)
+	}
+	if uu.mutation.DeleteTimeCleared() {
+		_spec.ClearField(user.FieldDeleteTime, field.TypeTime)
+	}
+	if value, ok := uu.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
+	}
+	if uu.mutation.StatusCleared() {
+		_spec.ClearField(user.FieldStatus, field.TypeEnum)
+	}
 	if value, ok := uu.mutation.UserName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldUserName,
-		})
+		_spec.SetField(user.FieldUserName, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPassword,
-		})
+		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.NickName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldNickName,
-		})
+		_spec.SetField(user.FieldNickName, field.TypeString, value)
 	}
 	if uu.mutation.NickNameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldNickName,
-		})
+		_spec.ClearField(user.FieldNickName, field.TypeString)
 	}
 	if value, ok := uu.mutation.RealName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldRealName,
-		})
+		_spec.SetField(user.FieldRealName, field.TypeString, value)
 	}
 	if uu.mutation.RealNameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldRealName,
-		})
+		_spec.ClearField(user.FieldRealName, field.TypeString)
 	}
 	if value, ok := uu.mutation.Email(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldEmail,
-		})
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
 	if uu.mutation.EmailCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldEmail,
-		})
+		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uu.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPhone,
-		})
+		_spec.SetField(user.FieldPhone, field.TypeString, value)
 	}
 	if uu.mutation.PhoneCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldPhone,
-		})
+		_spec.ClearField(user.FieldPhone, field.TypeString)
 	}
+	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -311,15 +367,104 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	uu.mutation.done = true
 	return n, nil
 }
 
 // UserUpdateOne is the builder for updating a single User entity.
 type UserUpdateOne struct {
 	config
-	fields   []string
-	hooks    []Hook
-	mutation *UserMutation
+	fields    []string
+	hooks     []Hook
+	mutation  *UserMutation
+	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetCreateBy sets the "create_by" field.
+func (uuo *UserUpdateOne) SetCreateBy(u uint32) *UserUpdateOne {
+	uuo.mutation.ResetCreateBy()
+	uuo.mutation.SetCreateBy(u)
+	return uuo
+}
+
+// SetNillableCreateBy sets the "create_by" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableCreateBy(u *uint32) *UserUpdateOne {
+	if u != nil {
+		uuo.SetCreateBy(*u)
+	}
+	return uuo
+}
+
+// AddCreateBy adds u to the "create_by" field.
+func (uuo *UserUpdateOne) AddCreateBy(u int32) *UserUpdateOne {
+	uuo.mutation.AddCreateBy(u)
+	return uuo
+}
+
+// ClearCreateBy clears the value of the "create_by" field.
+func (uuo *UserUpdateOne) ClearCreateBy() *UserUpdateOne {
+	uuo.mutation.ClearCreateBy()
+	return uuo
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetUpdateTime(t)
+	return uuo
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableUpdateTime(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetUpdateTime(*t)
+	}
+	return uuo
+}
+
+// ClearUpdateTime clears the value of the "update_time" field.
+func (uuo *UserUpdateOne) ClearUpdateTime() *UserUpdateOne {
+	uuo.mutation.ClearUpdateTime()
+	return uuo
+}
+
+// SetDeleteTime sets the "delete_time" field.
+func (uuo *UserUpdateOne) SetDeleteTime(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetDeleteTime(t)
+	return uuo
+}
+
+// SetNillableDeleteTime sets the "delete_time" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableDeleteTime(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetDeleteTime(*t)
+	}
+	return uuo
+}
+
+// ClearDeleteTime clears the value of the "delete_time" field.
+func (uuo *UserUpdateOne) ClearDeleteTime() *UserUpdateOne {
+	uuo.mutation.ClearDeleteTime()
+	return uuo
+}
+
+// SetStatus sets the "status" field.
+func (uuo *UserUpdateOne) SetStatus(u user.Status) *UserUpdateOne {
+	uuo.mutation.SetStatus(u)
+	return uuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableStatus(u *user.Status) *UserUpdateOne {
+	if u != nil {
+		uuo.SetStatus(*u)
+	}
+	return uuo
+}
+
+// ClearStatus clears the value of the "status" field.
+func (uuo *UserUpdateOne) ClearStatus() *UserUpdateOne {
+	uuo.mutation.ClearStatus()
+	return uuo
 }
 
 // SetUserName sets the "user_name" field.
@@ -419,6 +564,12 @@ func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
 }
 
+// Where appends a list predicates to the UserUpdate builder.
+func (uuo *UserUpdateOne) Where(ps ...predicate.User) *UserUpdateOne {
+	uuo.mutation.Where(ps...)
+	return uuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne {
@@ -428,46 +579,7 @@ func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne 
 
 // Save executes the query and returns the updated User entity.
 func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
-	var (
-		err  error
-		node *User
-	)
-	if len(uuo.hooks) == 0 {
-		if err = uuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = uuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uuo.check(); err != nil {
-				return nil, err
-			}
-			uuo.mutation = mutation
-			node, err = uuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uuo.hooks) - 1; i >= 0; i-- {
-			if uuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*User)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*User, UserMutation](ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -494,6 +606,11 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (uuo *UserUpdateOne) check() error {
+	if v, ok := uuo.mutation.Status(); ok {
+		if err := user.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
+		}
+	}
 	if v, ok := uuo.mutation.UserName(); ok {
 		if err := user.UserNameValidator(v); err != nil {
 			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
@@ -527,17 +644,17 @@ func (uuo *UserUpdateOne) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (uuo *UserUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserUpdateOne {
+	uuo.modifiers = append(uuo.modifiers, modifiers...)
+	return uuo
+}
+
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   user.Table,
-			Columns: user.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
-				Column: user.FieldID,
-			},
-		},
+	if err := uuo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	id, ok := uuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -562,72 +679,67 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			}
 		}
 	}
+	if value, ok := uuo.mutation.CreateBy(); ok {
+		_spec.SetField(user.FieldCreateBy, field.TypeUint32, value)
+	}
+	if value, ok := uuo.mutation.AddedCreateBy(); ok {
+		_spec.AddField(user.FieldCreateBy, field.TypeUint32, value)
+	}
+	if uuo.mutation.CreateByCleared() {
+		_spec.ClearField(user.FieldCreateBy, field.TypeUint32)
+	}
+	if uuo.mutation.CreateTimeCleared() {
+		_spec.ClearField(user.FieldCreateTime, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.UpdateTime(); ok {
+		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
+	}
+	if uuo.mutation.UpdateTimeCleared() {
+		_spec.ClearField(user.FieldUpdateTime, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.DeleteTime(); ok {
+		_spec.SetField(user.FieldDeleteTime, field.TypeTime, value)
+	}
+	if uuo.mutation.DeleteTimeCleared() {
+		_spec.ClearField(user.FieldDeleteTime, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
+	}
+	if uuo.mutation.StatusCleared() {
+		_spec.ClearField(user.FieldStatus, field.TypeEnum)
+	}
 	if value, ok := uuo.mutation.UserName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldUserName,
-		})
+		_spec.SetField(user.FieldUserName, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.Password(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPassword,
-		})
+		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.NickName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldNickName,
-		})
+		_spec.SetField(user.FieldNickName, field.TypeString, value)
 	}
 	if uuo.mutation.NickNameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldNickName,
-		})
+		_spec.ClearField(user.FieldNickName, field.TypeString)
 	}
 	if value, ok := uuo.mutation.RealName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldRealName,
-		})
+		_spec.SetField(user.FieldRealName, field.TypeString, value)
 	}
 	if uuo.mutation.RealNameCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldRealName,
-		})
+		_spec.ClearField(user.FieldRealName, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Email(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldEmail,
-		})
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
 	if uuo.mutation.EmailCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldEmail,
-		})
+		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Phone(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPhone,
-		})
+		_spec.SetField(user.FieldPhone, field.TypeString, value)
 	}
 	if uuo.mutation.PhoneCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: user.FieldPhone,
-		})
+		_spec.ClearField(user.FieldPhone, field.TypeString)
 	}
+	_spec.AddModifiers(uuo.modifiers...)
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
@@ -639,5 +751,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		return nil, err
 	}
+	uuo.mutation.done = true
 	return _node, nil
 }
