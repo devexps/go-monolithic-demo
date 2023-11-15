@@ -18,18 +18,19 @@ func init() {
 	_ = userMixinFields3
 	userFields := schema.User{}.Fields()
 	_ = userFields
-	// userDescUserName is the schema descriptor for user_name field.
-	userDescUserName := userFields[0].Descriptor()
-	// user.UserNameValidator is a validator for the "user_name" field. It is called by the builders before save.
-	user.UserNameValidator = func() func(string) error {
-		validators := userDescUserName.Validators
+	// userDescUsername is the schema descriptor for username field.
+	userDescUsername := userFields[0].Descriptor()
+	// user.UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	user.UsernameValidator = func() func(string) error {
+		validators := userDescUsername.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
+			validators[2].(func(string) error),
 		}
-		return func(user_name string) error {
+		return func(username string) error {
 			for _, fn := range fns {
-				if err := fn(user_name); err != nil {
+				if err := fn(username); err != nil {
 					return err
 				}
 			}
@@ -39,7 +40,21 @@ func init() {
 	// userDescPassword is the schema descriptor for password field.
 	userDescPassword := userFields[1].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
-	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	user.PasswordValidator = func() func(string) error {
+		validators := userDescPassword.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(password string) error {
+			for _, fn := range fns {
+				if err := fn(password); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// userDescNickName is the schema descriptor for nick_name field.
 	userDescNickName := userFields[2].Descriptor()
 	// user.NickNameValidator is a validator for the "nick_name" field. It is called by the builders before save.
@@ -59,20 +74,5 @@ func init() {
 	// userDescID is the schema descriptor for id field.
 	userDescID := userMixinFields0[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	user.IDValidator = func() func(string) error {
-		validators := userDescID.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-			validators[2].(func(string) error),
-		}
-		return func(id string) error {
-			for _, fn := range fns {
-				if err := fn(id); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	user.IDValidator = userDescID.Validators[0].(func(uint32) error)
 }

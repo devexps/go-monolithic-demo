@@ -30,7 +30,7 @@ const OperationUserServiceUpdateUser = "/admin.service.v1.UserService/UpdateUser
 
 type UserServiceHTTPServer interface {
 	// CreateUser CreateUser
-	CreateUser(context.Context, *v1.CreateUserRequest) (*v1.User, error)
+	CreateUser(context.Context, *v1.CreateUserRequest) (*emptypb.Empty, error)
 	// DeleteUser DeleteUser
 	DeleteUser(context.Context, *v1.DeleteUserRequest) (*emptypb.Empty, error)
 	// GetUser GetUser
@@ -38,7 +38,7 @@ type UserServiceHTTPServer interface {
 	// ListUser ListUser
 	ListUser(context.Context, *pagination.PagingRequest) (*v1.ListUserResponse, error)
 	// UpdateUser UpdateUser
-	UpdateUser(context.Context, *v1.UpdateUserRequest) (*v1.User, error)
+	UpdateUser(context.Context, *v1.UpdateUserRequest) (*emptypb.Empty, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
@@ -46,7 +46,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.GET("/admin/v1/users", _UserService_ListUser0_HTTP_Handler(srv))
 	r.GET("/admin/v1/users/{id}", _UserService_GetUser0_HTTP_Handler(srv))
 	r.POST("/admin/v1/users", _UserService_CreateUser0_HTTP_Handler(srv))
-	r.PUT("/admin/v1/users/{id}", _UserService_UpdateUser0_HTTP_Handler(srv))
+	r.PUT("/admin/v1/users/{user.id}", _UserService_UpdateUser0_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/users/{id}", _UserService_DeleteUser0_HTTP_Handler(srv))
 }
 
@@ -108,7 +108,7 @@ func _UserService_CreateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.User)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -133,7 +133,7 @@ func _UserService_UpdateUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.User)
+		reply := out.(*emptypb.Empty)
 		return ctx.Result(200, reply)
 	}
 }
@@ -161,11 +161,11 @@ func _UserService_DeleteUser0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx h
 }
 
 type UserServiceHTTPClient interface {
-	CreateUser(ctx context.Context, req *v1.CreateUserRequest, opts ...http.CallOption) (rsp *v1.User, err error)
+	CreateUser(ctx context.Context, req *v1.CreateUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	DeleteUser(ctx context.Context, req *v1.DeleteUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	GetUser(ctx context.Context, req *v1.GetUserRequest, opts ...http.CallOption) (rsp *v1.User, err error)
 	ListUser(ctx context.Context, req *pagination.PagingRequest, opts ...http.CallOption) (rsp *v1.ListUserResponse, err error)
-	UpdateUser(ctx context.Context, req *v1.UpdateUserRequest, opts ...http.CallOption) (rsp *v1.User, err error)
+	UpdateUser(ctx context.Context, req *v1.UpdateUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type UserServiceHTTPClientImpl struct {
@@ -176,8 +176,8 @@ func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 	return &UserServiceHTTPClientImpl{client}
 }
 
-func (c *UserServiceHTTPClientImpl) CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...http.CallOption) (*v1.User, error) {
-	var out v1.User
+func (c *UserServiceHTTPClientImpl) CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
 	pattern := "/admin/v1/users"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserServiceCreateUser))
@@ -228,9 +228,9 @@ func (c *UserServiceHTTPClientImpl) ListUser(ctx context.Context, in *pagination
 	return &out, err
 }
 
-func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...http.CallOption) (*v1.User, error) {
-	var out v1.User
-	pattern := "/admin/v1/users/{id}"
+func (c *UserServiceHTTPClientImpl) UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/users/{user.id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserServiceUpdateUser))
 	opts = append(opts, http.PathTemplate(pattern))

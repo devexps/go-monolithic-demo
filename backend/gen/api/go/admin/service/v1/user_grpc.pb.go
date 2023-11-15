@@ -38,9 +38,9 @@ type UserServiceClient interface {
 	// GetUser
 	GetUser(ctx context.Context, in *v1.GetUserRequest, opts ...grpc.CallOption) (*v1.User, error)
 	// CreateUser
-	CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...grpc.CallOption) (*v1.User, error)
+	CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// UpdateUser
-	UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...grpc.CallOption) (*v1.User, error)
+	UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteUser
 	DeleteUser(ctx context.Context, in *v1.DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -71,8 +71,8 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *v1.GetUserRequest, 
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...grpc.CallOption) (*v1.User, error) {
-	out := new(v1.User)
+func (c *userServiceClient) CreateUser(ctx context.Context, in *v1.CreateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UserService_CreateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,8 +80,8 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *v1.CreateUserReq
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...grpc.CallOption) (*v1.User, error) {
-	out := new(v1.User)
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *v1.UpdateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UserService_UpdateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -107,9 +107,9 @@ type UserServiceServer interface {
 	// GetUser
 	GetUser(context.Context, *v1.GetUserRequest) (*v1.User, error)
 	// CreateUser
-	CreateUser(context.Context, *v1.CreateUserRequest) (*v1.User, error)
+	CreateUser(context.Context, *v1.CreateUserRequest) (*emptypb.Empty, error)
 	// UpdateUser
-	UpdateUser(context.Context, *v1.UpdateUserRequest) (*v1.User, error)
+	UpdateUser(context.Context, *v1.UpdateUserRequest) (*emptypb.Empty, error)
 	// DeleteUser
 	DeleteUser(context.Context, *v1.DeleteUserRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -125,10 +125,10 @@ func (UnimplementedUserServiceServer) ListUser(context.Context, *pagination.Pagi
 func (UnimplementedUserServiceServer) GetUser(context.Context, *v1.GetUserRequest) (*v1.User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *v1.CreateUserRequest) (*v1.User, error) {
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *v1.CreateUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUser(context.Context, *v1.UpdateUserRequest) (*v1.User, error) {
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *v1.UpdateUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *v1.DeleteUserRequest) (*emptypb.Empty, error) {

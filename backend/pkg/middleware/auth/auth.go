@@ -6,6 +6,7 @@ import (
 	"github.com/devexps/go-micro/v2/middleware/authn"
 	"github.com/devexps/go-micro/v2/middleware/authz"
 	"github.com/devexps/go-micro/v2/transport"
+	"strconv"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 )
 
 type authInfo struct {
-	UserId string
+	UserId uint32
 }
 
 // Server .
@@ -49,10 +50,11 @@ func FromContext(ctx context.Context) (*authInfo, error) {
 	if !ok {
 		return nil, ErrMissingJwtToken
 	}
-	if claims.GetSubject() == "" {
+	userId, err := strconv.ParseUint(claims.GetSubject(), 10, 32)
+	if err != nil {
 		return nil, ErrExtractSubjectFailed
 	}
 	return &authInfo{
-		UserId: claims.GetSubject(),
+		UserId: uint32(userId),
 	}, nil
 }

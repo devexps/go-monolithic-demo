@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -93,15 +92,31 @@ func (uc *UserCreate) SetNillableStatus(u *user.Status) *UserCreate {
 	return uc
 }
 
-// SetUserName sets the "user_name" field.
-func (uc *UserCreate) SetUserName(s string) *UserCreate {
-	uc.mutation.SetUserName(s)
+// SetUsername sets the "username" field.
+func (uc *UserCreate) SetUsername(s string) *UserCreate {
+	uc.mutation.SetUsername(s)
+	return uc
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUsername(s *string) *UserCreate {
+	if s != nil {
+		uc.SetUsername(*s)
+	}
 	return uc
 }
 
 // SetPassword sets the "password" field.
 func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	uc.mutation.SetPassword(s)
+	return uc
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePassword(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPassword(*s)
+	}
 	return uc
 }
 
@@ -161,9 +176,23 @@ func (uc *UserCreate) SetNillablePhone(s *string) *UserCreate {
 	return uc
 }
 
+// SetAuthority sets the "authority" field.
+func (uc *UserCreate) SetAuthority(u user.Authority) *UserCreate {
+	uc.mutation.SetAuthority(u)
+	return uc
+}
+
+// SetNillableAuthority sets the "authority" field if the given value is not nil.
+func (uc *UserCreate) SetNillableAuthority(u *user.Authority) *UserCreate {
+	if u != nil {
+		uc.SetAuthority(*u)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(s string) *UserCreate {
-	uc.mutation.SetID(s)
+func (uc *UserCreate) SetID(u uint32) *UserCreate {
+	uc.mutation.SetID(u)
 	return uc
 }
 
@@ -206,6 +235,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultStatus
 		uc.mutation.SetStatus(v)
 	}
+	if _, ok := uc.mutation.Authority(); !ok {
+		v := user.DefaultAuthority
+		uc.mutation.SetAuthority(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -215,16 +248,10 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.UserName(); !ok {
-		return &ValidationError{Name: "user_name", err: errors.New(`ent: missing required field "User.user_name"`)}
-	}
-	if v, ok := uc.mutation.UserName(); ok {
-		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
+	if v, ok := uc.mutation.Username(); ok {
+		if err := user.UsernameValidator(v); err != nil {
+			return &ValidationError{Name: "username", err: fmt.Errorf(`ent: validator failed for field "User.username": %w`, err)}
 		}
-	}
-	if _, ok := uc.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
 	}
 	if v, ok := uc.mutation.Password(); ok {
 		if err := user.PasswordValidator(v); err != nil {
@@ -251,6 +278,11 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
 		}
 	}
+	if v, ok := uc.mutation.Authority(); ok {
+		if err := user.AuthorityValidator(v); err != nil {
+			return &ValidationError{Name: "authority", err: fmt.Errorf(`ent: validator failed for field "User.authority": %w`, err)}
+		}
+	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
@@ -270,12 +302,9 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected User.ID type: %T", _spec.ID.Value)
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	uc.mutation.id = &_node.ID
 	uc.mutation.done = true
@@ -285,7 +314,7 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: uc.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint32))
 	)
 	_spec.OnConflict = uc.conflict
 	if id, ok := uc.mutation.ID(); ok {
@@ -312,29 +341,33 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
 	}
-	if value, ok := uc.mutation.UserName(); ok {
-		_spec.SetField(user.FieldUserName, field.TypeString, value)
-		_node.UserName = value
+	if value, ok := uc.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+		_node.Username = &value
 	}
 	if value, ok := uc.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
-		_node.Password = value
+		_node.Password = &value
 	}
 	if value, ok := uc.mutation.NickName(); ok {
 		_spec.SetField(user.FieldNickName, field.TypeString, value)
-		_node.NickName = value
+		_node.NickName = &value
 	}
 	if value, ok := uc.mutation.RealName(); ok {
 		_spec.SetField(user.FieldRealName, field.TypeString, value)
-		_node.RealName = value
+		_node.RealName = &value
 	}
 	if value, ok := uc.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
-		_node.Email = value
+		_node.Email = &value
 	}
 	if value, ok := uc.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
-		_node.Phone = value
+		_node.Phone = &value
+	}
+	if value, ok := uc.mutation.Authority(); ok {
+		_spec.SetField(user.FieldAuthority, field.TypeEnum, value)
+		_node.Authority = &value
 	}
 	return _node, _spec
 }
@@ -468,18 +501,6 @@ func (u *UserUpsert) ClearStatus() *UserUpsert {
 	return u
 }
 
-// SetUserName sets the "user_name" field.
-func (u *UserUpsert) SetUserName(v string) *UserUpsert {
-	u.Set(user.FieldUserName, v)
-	return u
-}
-
-// UpdateUserName sets the "user_name" field to the value that was provided on create.
-func (u *UserUpsert) UpdateUserName() *UserUpsert {
-	u.SetExcluded(user.FieldUserName)
-	return u
-}
-
 // SetPassword sets the "password" field.
 func (u *UserUpsert) SetPassword(v string) *UserUpsert {
 	u.Set(user.FieldPassword, v)
@@ -489,6 +510,12 @@ func (u *UserUpsert) SetPassword(v string) *UserUpsert {
 // UpdatePassword sets the "password" field to the value that was provided on create.
 func (u *UserUpsert) UpdatePassword() *UserUpsert {
 	u.SetExcluded(user.FieldPassword)
+	return u
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *UserUpsert) ClearPassword() *UserUpsert {
+	u.SetNull(user.FieldPassword)
 	return u
 }
 
@@ -564,6 +591,24 @@ func (u *UserUpsert) ClearPhone() *UserUpsert {
 	return u
 }
 
+// SetAuthority sets the "authority" field.
+func (u *UserUpsert) SetAuthority(v user.Authority) *UserUpsert {
+	u.Set(user.FieldAuthority, v)
+	return u
+}
+
+// UpdateAuthority sets the "authority" field to the value that was provided on create.
+func (u *UserUpsert) UpdateAuthority() *UserUpsert {
+	u.SetExcluded(user.FieldAuthority)
+	return u
+}
+
+// ClearAuthority clears the value of the "authority" field.
+func (u *UserUpsert) ClearAuthority() *UserUpsert {
+	u.SetNull(user.FieldAuthority)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -584,6 +629,9 @@ func (u *UserUpsertOne) UpdateNewValues() *UserUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(user.FieldCreateTime)
+		}
+		if _, exists := u.create.mutation.Username(); exists {
+			s.SetIgnore(user.FieldUsername)
 		}
 	}))
 	return u
@@ -708,20 +756,6 @@ func (u *UserUpsertOne) ClearStatus() *UserUpsertOne {
 	})
 }
 
-// SetUserName sets the "user_name" field.
-func (u *UserUpsertOne) SetUserName(v string) *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.SetUserName(v)
-	})
-}
-
-// UpdateUserName sets the "user_name" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateUserName() *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.UpdateUserName()
-	})
-}
-
 // SetPassword sets the "password" field.
 func (u *UserUpsertOne) SetPassword(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
@@ -733,6 +767,13 @@ func (u *UserUpsertOne) SetPassword(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdatePassword() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePassword()
+	})
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *UserUpsertOne) ClearPassword() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPassword()
 	})
 }
 
@@ -820,6 +861,27 @@ func (u *UserUpsertOne) ClearPhone() *UserUpsertOne {
 	})
 }
 
+// SetAuthority sets the "authority" field.
+func (u *UserUpsertOne) SetAuthority(v user.Authority) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAuthority(v)
+	})
+}
+
+// UpdateAuthority sets the "authority" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateAuthority() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAuthority()
+	})
+}
+
+// ClearAuthority clears the value of the "authority" field.
+func (u *UserUpsertOne) ClearAuthority() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAuthority()
+	})
+}
+
 // Exec executes the query.
 func (u *UserUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -836,12 +898,7 @@ func (u *UserUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserUpsertOne) ID(ctx context.Context) (id string, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: UserUpsertOne.ID is not supported by MySQL driver. Use UserUpsertOne.Exec instead")
-	}
+func (u *UserUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -850,7 +907,7 @@ func (u *UserUpsertOne) ID(ctx context.Context) (id string, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserUpsertOne) IDX(ctx context.Context) string {
+func (u *UserUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -901,6 +958,10 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1004,6 +1065,9 @@ func (u *UserUpsertBulk) UpdateNewValues() *UserUpsertBulk {
 			}
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(user.FieldCreateTime)
+			}
+			if _, exists := b.mutation.Username(); exists {
+				s.SetIgnore(user.FieldUsername)
 			}
 		}
 	}))
@@ -1129,20 +1193,6 @@ func (u *UserUpsertBulk) ClearStatus() *UserUpsertBulk {
 	})
 }
 
-// SetUserName sets the "user_name" field.
-func (u *UserUpsertBulk) SetUserName(v string) *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.SetUserName(v)
-	})
-}
-
-// UpdateUserName sets the "user_name" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateUserName() *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.UpdateUserName()
-	})
-}
-
 // SetPassword sets the "password" field.
 func (u *UserUpsertBulk) SetPassword(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
@@ -1154,6 +1204,13 @@ func (u *UserUpsertBulk) SetPassword(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdatePassword() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePassword()
+	})
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *UserUpsertBulk) ClearPassword() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPassword()
 	})
 }
 
@@ -1238,6 +1295,27 @@ func (u *UserUpsertBulk) UpdatePhone() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearPhone() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearPhone()
+	})
+}
+
+// SetAuthority sets the "authority" field.
+func (u *UserUpsertBulk) SetAuthority(v user.Authority) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAuthority(v)
+	})
+}
+
+// UpdateAuthority sets the "authority" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateAuthority() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAuthority()
+	})
+}
+
+// ClearAuthority clears the value of the "authority" field.
+func (u *UserUpsertBulk) ClearAuthority() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAuthority()
 	})
 }
 

@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -90,9 +91,9 @@ func (r *UserTokenRepo) GenerateAccessToken(ctx context.Context, user *userV1.Us
 	}, nil
 }
 
-func (r *UserTokenRepo) createAccessJwtToken(userId string) string {
+func (r *UserTokenRepo) createAccessJwtToken(userId uint32) string {
 	principal := &jwt.Claims{
-		Subject: userId,
+		Subject: strconv.FormatUint(uint64(userId), 10),
 	}
 	signedToken, err := r.data.authenticator.CreateIdentity(principal)
 	if err != nil {
@@ -106,28 +107,28 @@ func (r *UserTokenRepo) createRefreshToken() string {
 	return strUUID.String()
 }
 
-func (r *UserTokenRepo) setAccessTokenToRedis(ctx context.Context, userId, token string, expires int32) error {
-	key := fmt.Sprintf("%s%s", userAccessTokenKeyPrefix, userId)
+func (r *UserTokenRepo) setAccessTokenToRedis(ctx context.Context, userId uint32, token string, expires int32) error {
+	key := fmt.Sprintf("%s%d", userAccessTokenKeyPrefix, userId)
 	return r.data.rdb.Set(ctx, key, token, time.Duration(expires)).Err()
 }
 
-func (r *UserTokenRepo) setRefreshTokenToRedis(ctx context.Context, userId, token string, expires int32) error {
-	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
+func (r *UserTokenRepo) setRefreshTokenToRedis(ctx context.Context, userId uint32, token string, expires int32) error {
+	key := fmt.Sprintf("%s%d", userRefreshTokenKeyPrefix, userId)
 	return r.data.rdb.Set(ctx, key, token, time.Duration(expires)).Err()
 }
 
-func (r *UserTokenRepo) deleteAccessTokenFromRedis(ctx context.Context, userId string) error {
-	key := fmt.Sprintf("%s%s", userAccessTokenKeyPrefix, userId)
+func (r *UserTokenRepo) deleteAccessTokenFromRedis(ctx context.Context, userId uint32) error {
+	key := fmt.Sprintf("%s%d", userAccessTokenKeyPrefix, userId)
 	return r.data.rdb.Del(ctx, key).Err()
 }
 
-func (r *UserTokenRepo) deleteRefreshTokenFromRedis(ctx context.Context, userId string) error {
-	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
+func (r *UserTokenRepo) deleteRefreshTokenFromRedis(ctx context.Context, userId uint32) error {
+	key := fmt.Sprintf("%s%d", userRefreshTokenKeyPrefix, userId)
 	return r.data.rdb.Del(ctx, key).Err()
 }
 
-func (r *UserTokenRepo) getRefreshTokenFromRedis(ctx context.Context, userId string) string {
-	key := fmt.Sprintf("%s%s", userRefreshTokenKeyPrefix, userId)
+func (r *UserTokenRepo) getRefreshTokenFromRedis(ctx context.Context, userId uint32) string {
+	key := fmt.Sprintf("%s%d", userRefreshTokenKeyPrefix, userId)
 	result, err := r.data.rdb.Get(ctx, key).Result()
 	if err != nil {
 		if err != redis.Nil {

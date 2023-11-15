@@ -116,15 +116,23 @@ func (uu *UserUpdate) ClearStatus() *UserUpdate {
 	return uu
 }
 
-// SetUserName sets the "user_name" field.
-func (uu *UserUpdate) SetUserName(s string) *UserUpdate {
-	uu.mutation.SetUserName(s)
-	return uu
-}
-
 // SetPassword sets the "password" field.
 func (uu *UserUpdate) SetPassword(s string) *UserUpdate {
 	uu.mutation.SetPassword(s)
+	return uu
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPassword(*s)
+	}
+	return uu
+}
+
+// ClearPassword clears the value of the "password" field.
+func (uu *UserUpdate) ClearPassword() *UserUpdate {
+	uu.mutation.ClearPassword()
 	return uu
 }
 
@@ -208,6 +216,26 @@ func (uu *UserUpdate) ClearPhone() *UserUpdate {
 	return uu
 }
 
+// SetAuthority sets the "authority" field.
+func (uu *UserUpdate) SetAuthority(u user.Authority) *UserUpdate {
+	uu.mutation.SetAuthority(u)
+	return uu
+}
+
+// SetNillableAuthority sets the "authority" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableAuthority(u *user.Authority) *UserUpdate {
+	if u != nil {
+		uu.SetAuthority(*u)
+	}
+	return uu
+}
+
+// ClearAuthority clears the value of the "authority" field.
+func (uu *UserUpdate) ClearAuthority() *UserUpdate {
+	uu.mutation.ClearAuthority()
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -247,11 +275,6 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.UserName(); ok {
-		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
-		}
-	}
 	if v, ok := uu.mutation.Password(); ok {
 		if err := user.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
@@ -277,6 +300,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Authority(); ok {
+		if err := user.AuthorityValidator(v); err != nil {
+			return &ValidationError{Name: "authority", err: fmt.Errorf(`ent: validator failed for field "User.authority": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -290,7 +318,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := uu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint32))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -328,11 +356,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.StatusCleared() {
 		_spec.ClearField(user.FieldStatus, field.TypeEnum)
 	}
-	if value, ok := uu.mutation.UserName(); ok {
-		_spec.SetField(user.FieldUserName, field.TypeString, value)
+	if uu.mutation.UsernameCleared() {
+		_spec.ClearField(user.FieldUsername, field.TypeString)
 	}
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if uu.mutation.PasswordCleared() {
+		_spec.ClearField(user.FieldPassword, field.TypeString)
 	}
 	if value, ok := uu.mutation.NickName(); ok {
 		_spec.SetField(user.FieldNickName, field.TypeString, value)
@@ -357,6 +388,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.PhoneCleared() {
 		_spec.ClearField(user.FieldPhone, field.TypeString)
+	}
+	if value, ok := uu.mutation.Authority(); ok {
+		_spec.SetField(user.FieldAuthority, field.TypeEnum, value)
+	}
+	if uu.mutation.AuthorityCleared() {
+		_spec.ClearField(user.FieldAuthority, field.TypeEnum)
 	}
 	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
@@ -467,15 +504,23 @@ func (uuo *UserUpdateOne) ClearStatus() *UserUpdateOne {
 	return uuo
 }
 
-// SetUserName sets the "user_name" field.
-func (uuo *UserUpdateOne) SetUserName(s string) *UserUpdateOne {
-	uuo.mutation.SetUserName(s)
-	return uuo
-}
-
 // SetPassword sets the "password" field.
 func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
 	uuo.mutation.SetPassword(s)
+	return uuo
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPassword(*s)
+	}
+	return uuo
+}
+
+// ClearPassword clears the value of the "password" field.
+func (uuo *UserUpdateOne) ClearPassword() *UserUpdateOne {
+	uuo.mutation.ClearPassword()
 	return uuo
 }
 
@@ -559,6 +604,26 @@ func (uuo *UserUpdateOne) ClearPhone() *UserUpdateOne {
 	return uuo
 }
 
+// SetAuthority sets the "authority" field.
+func (uuo *UserUpdateOne) SetAuthority(u user.Authority) *UserUpdateOne {
+	uuo.mutation.SetAuthority(u)
+	return uuo
+}
+
+// SetNillableAuthority sets the "authority" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableAuthority(u *user.Authority) *UserUpdateOne {
+	if u != nil {
+		uuo.SetAuthority(*u)
+	}
+	return uuo
+}
+
+// ClearAuthority clears the value of the "authority" field.
+func (uuo *UserUpdateOne) ClearAuthority() *UserUpdateOne {
+	uuo.mutation.ClearAuthority()
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -611,11 +676,6 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.UserName(); ok {
-		if err := user.UserNameValidator(v); err != nil {
-			return &ValidationError{Name: "user_name", err: fmt.Errorf(`ent: validator failed for field "User.user_name": %w`, err)}
-		}
-	}
 	if v, ok := uuo.mutation.Password(); ok {
 		if err := user.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
@@ -641,6 +701,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Authority(); ok {
+		if err := user.AuthorityValidator(v); err != nil {
+			return &ValidationError{Name: "authority", err: fmt.Errorf(`ent: validator failed for field "User.authority": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -654,7 +719,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if err := uuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint32))
 	id, ok := uuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -709,11 +774,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if uuo.mutation.StatusCleared() {
 		_spec.ClearField(user.FieldStatus, field.TypeEnum)
 	}
-	if value, ok := uuo.mutation.UserName(); ok {
-		_spec.SetField(user.FieldUserName, field.TypeString, value)
+	if uuo.mutation.UsernameCleared() {
+		_spec.ClearField(user.FieldUsername, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if uuo.mutation.PasswordCleared() {
+		_spec.ClearField(user.FieldPassword, field.TypeString)
 	}
 	if value, ok := uuo.mutation.NickName(); ok {
 		_spec.SetField(user.FieldNickName, field.TypeString, value)
@@ -738,6 +806,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.PhoneCleared() {
 		_spec.ClearField(user.FieldPhone, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Authority(); ok {
+		_spec.SetField(user.FieldAuthority, field.TypeEnum, value)
+	}
+	if uuo.mutation.AuthorityCleared() {
+		_spec.ClearField(user.FieldAuthority, field.TypeEnum)
 	}
 	_spec.AddModifiers(uuo.modifiers...)
 	_node = &User{config: uuo.config}

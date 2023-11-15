@@ -11,18 +11,19 @@ import (
 var (
 	// UserColumns holds the columns for the "user" table.
 	UserColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Unique: true, Size: 25},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "create_by", Type: field.TypeUint32, Nullable: true},
 		{Name: "create_time", Type: field.TypeTime, Nullable: true},
 		{Name: "update_time", Type: field.TypeTime, Nullable: true},
 		{Name: "delete_time", Type: field.TypeTime, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Enums: []string{"OFF", "ON"}, Default: "ON"},
-		{Name: "user_name", Type: field.TypeString, Unique: true, Size: 50},
-		{Name: "password", Type: field.TypeString, Size: 255},
+		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true, Size: 50},
+		{Name: "password", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "nick_name", Type: field.TypeString, Nullable: true, Size: 128},
 		{Name: "real_name", Type: field.TypeString, Nullable: true, Size: 128},
 		{Name: "email", Type: field.TypeString, Nullable: true, Size: 127},
 		{Name: "phone", Type: field.TypeString, Nullable: true, Size: 11},
+		{Name: "authority", Type: field.TypeEnum, Nullable: true, Enums: []string{"UA_UNSPECIFIED", "SYS_ADMIN", "CUSTOMER_USER", "GUEST_USER", "REFRESH_TOKEN"}, Default: "CUSTOMER_USER"},
 	}
 	// UserTable holds the schema information for the "user" table.
 	UserTable = &schema.Table{
@@ -36,7 +37,7 @@ var (
 				Columns: []*schema.Column{UserColumns[0]},
 			},
 			{
-				Name:    "user_id_user_name",
+				Name:    "user_id_username",
 				Unique:  true,
 				Columns: []*schema.Column{UserColumns[0], UserColumns[6]},
 			},

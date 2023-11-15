@@ -16,7 +16,7 @@ type User struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
-	ID string `json:"id,omitempty"`
+	ID uint32 `json:"id,omitempty"`
 	// create_by
 	CreateBy uint32 `json:"create_by,omitempty"`
 	// create_time
@@ -27,18 +27,20 @@ type User struct {
 	DeleteTime time.Time `json:"delete_time,omitempty"`
 	// status
 	Status user.Status `json:"status,omitempty"`
-	// user_name
-	UserName string `json:"user_name,omitempty"`
+	// username
+	Username *string `json:"username,omitempty"`
 	// password
-	Password string `json:"password,omitempty"`
+	Password *string `json:"password,omitempty"`
 	// nick_name
-	NickName string `json:"nick_name,omitempty"`
+	NickName *string `json:"nick_name,omitempty"`
 	// real_name
-	RealName string `json:"real_name,omitempty"`
+	RealName *string `json:"real_name,omitempty"`
 	// email
-	Email string `json:"email,omitempty"`
+	Email *string `json:"email,omitempty"`
 	// phone
-	Phone string `json:"phone,omitempty"`
+	Phone *string `json:"phone,omitempty"`
+	// authority
+	Authority *user.Authority `json:"authority,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -46,9 +48,9 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldCreateBy:
+		case user.FieldID, user.FieldCreateBy:
 			values[i] = new(sql.NullInt64)
-		case user.FieldID, user.FieldStatus, user.FieldUserName, user.FieldPassword, user.FieldNickName, user.FieldRealName, user.FieldEmail, user.FieldPhone:
+		case user.FieldStatus, user.FieldUsername, user.FieldPassword, user.FieldNickName, user.FieldRealName, user.FieldEmail, user.FieldPhone, user.FieldAuthority:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime, user.FieldDeleteTime:
 			values[i] = new(sql.NullTime)
@@ -68,11 +70,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				u.ID = value.String
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			u.ID = uint32(value.Int64)
 		case user.FieldCreateBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field create_by", values[i])
@@ -103,41 +105,54 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Status = user.Status(value.String)
 			}
-		case user.FieldUserName:
+		case user.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_name", values[i])
+				return fmt.Errorf("unexpected type %T for field username", values[i])
 			} else if value.Valid {
-				u.UserName = value.String
+				u.Username = new(string)
+				*u.Username = value.String
 			}
 		case user.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
-				u.Password = value.String
+				u.Password = new(string)
+				*u.Password = value.String
 			}
 		case user.FieldNickName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nick_name", values[i])
 			} else if value.Valid {
-				u.NickName = value.String
+				u.NickName = new(string)
+				*u.NickName = value.String
 			}
 		case user.FieldRealName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field real_name", values[i])
 			} else if value.Valid {
-				u.RealName = value.String
+				u.RealName = new(string)
+				*u.RealName = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				u.Email = value.String
+				u.Email = new(string)
+				*u.Email = value.String
 			}
 		case user.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				u.Phone = value.String
+				u.Phone = new(string)
+				*u.Phone = value.String
+			}
+		case user.FieldAuthority:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field authority", values[i])
+			} else if value.Valid {
+				u.Authority = new(user.Authority)
+				*u.Authority = user.Authority(value.String)
 			}
 		}
 	}
@@ -182,23 +197,40 @@ func (u *User) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", u.Status))
 	builder.WriteString(", ")
-	builder.WriteString("user_name=")
-	builder.WriteString(u.UserName)
+	if v := u.Username; v != nil {
+		builder.WriteString("username=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(u.Password)
+	if v := u.Password; v != nil {
+		builder.WriteString("password=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("nick_name=")
-	builder.WriteString(u.NickName)
+	if v := u.NickName; v != nil {
+		builder.WriteString("nick_name=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("real_name=")
-	builder.WriteString(u.RealName)
+	if v := u.RealName; v != nil {
+		builder.WriteString("real_name=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("email=")
-	builder.WriteString(u.Email)
+	if v := u.Email; v != nil {
+		builder.WriteString("email=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("phone=")
-	builder.WriteString(u.Phone)
+	if v := u.Phone; v != nil {
+		builder.WriteString("phone=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := u.Authority; v != nil {
+		builder.WriteString("authority=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

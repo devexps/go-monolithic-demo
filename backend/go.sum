@@ -110,6 +110,8 @@ github.com/devexps/go-micro/log/logrus/v2 v2.0.0-20231106083309-0e1ceee74915 h1:
 github.com/devexps/go-micro/log/logrus/v2 v2.0.0-20231106083309-0e1ceee74915/go.mod h1:MUJbpkR4yhFipkSSxpeWjYfU8x/2EMkoyWvfStNK5Nk=
 github.com/devexps/go-micro/log/zap/v2 v2.0.0-20231106083309-0e1ceee74915 h1:rjtgaqsMHOv50cQCxKm/EVBTDFN/mHfx+kQyKcoLeX4=
 github.com/devexps/go-micro/log/zap/v2 v2.0.0-20231106083309-0e1ceee74915/go.mod h1:HiSdb+B7V1FuZ9b6zzOBlYBaUkP4/raL49VuZmzPW6U=
+github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-20231107084512-2d6ead0b2a51 h1:Il4S5ynZMAi8YdjW1sgimHmmue5XYvRcwh+fB81RqV4=
+github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-20231107084512-2d6ead0b2a51/go.mod h1:ZuQxMZRKkFUBnQHxe5ypCP1A6uX5UF4y7oTyteJBKYg=
 github.com/devexps/go-micro/registry/consul/v2 v2.0.0-20231106083309-0e1ceee74915 h1:LuCQ3FTAY+K8ZgVsJLhMQVmDn4jgbw8RvFgw2sOonLQ=
 github.com/devexps/go-micro/registry/consul/v2 v2.0.0-20231106083309-0e1ceee74915/go.mod h1:bMe5cWWgrT4aC86yO+Hm/YyefzSxNo43kDaEwPc+LfU=
 github.com/devexps/go-micro/registry/etcd/v2 v2.0.0-20231106083309-0e1ceee74915 h1:UqbKWhTeZ1VJmGKQTlMKZluf93s3i68tt0YkKHUBK+g=
@@ -124,10 +126,10 @@ github.com/devexps/go-pkg/v2 v2.0.0 h1:sEymXpENjK7xTPwyAZw6RdZnrDU6ne4C9zBzvHWCQ
 github.com/devexps/go-pkg/v2 v2.0.0/go.mod h1:y9+lQfT+hTqxx4aOOp2SIpz7/Miu49WM6C78XlbIirQ=
 github.com/devexps/go-swagger-ui v0.0.0-20231102043114-64b07af220e0 h1:+HCgKoXVIhg/07DxJBQ85IeHLc2DEmaSXsduXdd7WIs=
 github.com/devexps/go-swagger-ui v0.0.0-20231102043114-64b07af220e0/go.mod h1:DBGCnvFGpKm/oTNyjsXALWs9wDdTQEoGUcyYRJVZDqY=
-github.com/devexps/go-utils v0.0.0-20231114102501-ff3f005e6ebf h1:Lp6THuiV6wh2JblQbPlPs1cLfkRQBDEKwLupTJfg/YA=
-github.com/devexps/go-utils v0.0.0-20231114102501-ff3f005e6ebf/go.mod h1:x+vev1AKuFJVSMH84t0kJHD/EFmKKK//hqJljCrv+jU=
-github.com/devexps/go-utils/entgo v0.0.0-20231114102501-ff3f005e6ebf h1:Q+To+l+3Vom0A7yHxtYGWUMQYqD0LT5u//JwaC4vfcw=
-github.com/devexps/go-utils/entgo v0.0.0-20231114102501-ff3f005e6ebf/go.mod h1:6cXdCjAShnF6sVSjNoJmqXgMFgvGkRHlEu6N+4c9dps=
+github.com/devexps/go-utils v0.0.0-20231115105147-4a33c319453a h1:C3PClglWhpEkkGdpl/DKA0kWQ2XYCB7aMKov/y3H7bA=
+github.com/devexps/go-utils v0.0.0-20231115105147-4a33c319453a/go.mod h1:6skbZd12muqduBjWa6P6JZHsYPoaZx7XeB9P/+CZJ5o=
+github.com/devexps/go-utils/entgo v0.0.0-20231115105147-4a33c319453a h1:YdqUQ29RDqFxeS9zJP5xKNtWqUCPxhBALmr+HjOn+Xk=
+github.com/devexps/go-utils/entgo v0.0.0-20231115105147-4a33c319453a/go.mod h1:6cXdCjAShnF6sVSjNoJmqXgMFgvGkRHlEu6N+4c9dps=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3ebgob9U8Nd0kOddGdZWjyMGR8Wziv+TBNwSE=

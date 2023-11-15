@@ -61,7 +61,8 @@ paths:
                 - name: id
                   in: query
                   schema:
-                    type: string
+                    type: integer
+                    format: uint32
             responses:
                 "200":
                     description: OK
@@ -156,6 +157,11 @@ paths:
                 - name: operatorId
                   in: query
                   schema:
+                    type: integer
+                    format: uint32
+                - name: password
+                  in: query
+                  schema:
                     type: string
             requestBody:
                 content:
@@ -166,10 +172,7 @@ paths:
             responses:
                 "200":
                     description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/User'
+                    content: {}
             security:
                 - OAuth2PasswordBearer: []
     /admin/v1/users/{id}:
@@ -183,37 +186,8 @@ paths:
                   in: path
                   required: true
                   schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/User'
-            security:
-                - OAuth2PasswordBearer: []
-        put:
-            tags:
-                - UserService
-            description: UpdateUser
-            operationId: UserService_UpdateUser
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: operatorId
-                  in: query
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/User'
-                required: true
+                    type: integer
+                    format: uint32
             responses:
                 "200":
                     description: OK
@@ -233,11 +207,55 @@ paths:
                   in: path
                   required: true
                   schema:
+                    type: integer
+                    format: uint32
+                - name: operatorId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+            security:
+                - OAuth2PasswordBearer: []
+    /admin/v1/users/{user.id}:
+        put:
+            tags:
+                - UserService
+            description: UpdateUser
+            operationId: UserService_UpdateUser
+            parameters:
+                - name: user.id
+                  in: path
+                  required: true
+                  schema:
                     type: string
                 - name: operatorId
                   in: query
                   schema:
+                    type: integer
+                    format: uint32
+                - name: password
+                  in: query
+                  schema:
                     type: string
+                - name: updateMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+                - name: allowMissing
+                  in: query
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -310,17 +328,18 @@ components:
             type: object
             properties:
                 id:
-                    type: string
+                    type: integer
+                    format: uint32
             description: LogoutRequest
         RefreshTokenRequest:
             required:
-                - refresh_token
-                - grand_type
+                - refreshToken
+                - grandType
             type: object
             properties:
-                refresh_token:
+                refreshToken:
                     type: string
-                grand_type:
+                grandType:
                     type: string
                     default: password
                     description: Authorization type, the value here is fixed to "password", required.
@@ -330,35 +349,25 @@ components:
         RefreshTokenResponse:
             type: object
             properties:
-                access_token:
+                accessToken:
                     type: string
-                refresh_token:
+                refreshToken:
                     type: string
-                grand_type:
+                grandType:
                     type: string
-                expires_in:
+                expiresIn:
                     type: string
             description: RefreshTokenResponse
         User:
             type: object
             properties:
                 id:
-                    type: string
-                roleId:
-                    type: string
-                    description: RoleID
-                workId:
-                    type: string
-                    description: WorkID
-                orgId:
-                    type: string
-                    description: OrgID
-                positionId:
-                    type: string
-                    description: PositionID
+                    type: integer
+                    format: uint32
                 creatorId:
-                    type: string
+                    type: integer
                     description: CreatorID
+                    format: uint32
                 userName:
                     type: string
                 nickName:

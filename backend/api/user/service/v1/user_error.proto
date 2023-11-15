@@ -12,5 +12,9 @@ enum UserErrorReason {
 
   USER_NOT_EXIST = 0 [(errors.code) = 401];
   INVALID_PASSWORD = 1 [(errors.code) = 402];
-  QUERY_DATA_FAILED = 2 [(errors.code) = 403];
+  INVALID_REQUEST = 2 [(errors.code) = 403];
+  INVALID_FIELD_MASK = 3 [(errors.code) = 404];
+  QUERY_DATA_FAILED = 4 [(errors.code) = 405];
+  INSERT_DATA_FAILED = 5 [(errors.code) = 406];
+  UPDATE_DATA_FAILED = 6 [(errors.code) = 407];
 }

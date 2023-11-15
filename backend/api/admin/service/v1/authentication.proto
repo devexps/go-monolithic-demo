@@ -63,7 +63,7 @@ message LoginRequest {
     json_name = "password",
     (google.api.field_behavior) = REQUIRED
   ];
-  string grandType = 3 [
+  string grand_type = 3 [
     json_name = "grand_type",
     (google.api.field_behavior) = REQUIRED,
     (gnostic.openapi.v3.property) = {
@@ -79,28 +79,25 @@ message LoginRequest {
 
 // LoginResponse
 message LoginResponse {
-  string accessToken = 1 [json_name = "access_token"];
-  string refreshToken = 2 [json_name = "refresh_token"];
-  string grandType = 3 [json_name = "grand_type"];
-  int64 expiresIn = 4 [json_name = "expires_in"];
+  string access_token = 1 [json_name = "access_token"];
+  string refresh_token = 2 [json_name = "refresh_token"];
+  string grand_type = 3 [json_name = "grand_type"];
+  int64 expires_in = 4 [json_name = "expires_in"];
 }
 
 // LogoutRequest
 message LogoutRequest {
-  string id = 1 [
-    json_name = "id",
+  uint32 id = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
 }
 
 // RefreshTokenRequest
 message RefreshTokenRequest {
-  string refreshToken = 1 [
-    json_name = "refresh_token",
+  string refresh_token = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
   string grandType = 2 [
-    json_name = "grand_type",
     (google.api.field_behavior) = REQUIRED,
     (gnostic.openapi.v3.property) = {
       description: "Authorization type, the value here is fixed to \"password\", required.",
@@ -108,23 +105,21 @@ message RefreshTokenRequest {
     }
   ];
   string scope = 3 [
-    json_name = "scope",
     (google.api.field_behavior) = OPTIONAL
   ];
 }
 
 // RefreshTokenResponse
 message RefreshTokenResponse {
-  string accessToken = 1 [json_name = "access_token"];
-  string refreshToken = 2 [json_name = "refresh_token"];
-  string grandType = 3 [json_name = "grand_type"];
-  int64 expiresIn = 4 [json_name = "expires_in"];
+  string access_token = 1;
+  string refresh_token = 2;
+  string grand_type = 3;
+  int64 expires_in = 4;
 }
 
 // GetMeRequest
 message GetMeRequest {
-  string id = 1 [
-    json_name = "id",
+  uint32 id = 1 [
     (google.api.field_behavior) = REQUIRED
   ];
 }

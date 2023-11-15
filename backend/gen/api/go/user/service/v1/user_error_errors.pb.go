@@ -35,14 +35,62 @@ func ErrorInvalidPassword(format string, args ...interface{}) *errors.Error {
 	return errors.New(402, UserErrorReason_INVALID_PASSWORD.String(), fmt.Sprintf(format, args...))
 }
 
+func IsInvalidRequest(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_INVALID_REQUEST.String() && e.Code == 403
+}
+
+func ErrorInvalidRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, UserErrorReason_INVALID_REQUEST.String(), fmt.Sprintf(format, args...))
+}
+
+func IsInvalidFieldMask(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_INVALID_FIELD_MASK.String() && e.Code == 404
+}
+
+func ErrorInvalidFieldMask(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, UserErrorReason_INVALID_FIELD_MASK.String(), fmt.Sprintf(format, args...))
+}
+
 func IsQueryDataFailed(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == UserErrorReason_QUERY_DATA_FAILED.String() && e.Code == 403
+	return e.Reason == UserErrorReason_QUERY_DATA_FAILED.String() && e.Code == 405
 }
 
 func ErrorQueryDataFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(403, UserErrorReason_QUERY_DATA_FAILED.String(), fmt.Sprintf(format, args...))
+	return errors.New(405, UserErrorReason_QUERY_DATA_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsInsertDataFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_INSERT_DATA_FAILED.String() && e.Code == 406
+}
+
+func ErrorInsertDataFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(406, UserErrorReason_INSERT_DATA_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsUpdateDataFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_UPDATE_DATA_FAILED.String() && e.Code == 407
+}
+
+func ErrorUpdateDataFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(407, UserErrorReason_UPDATE_DATA_FAILED.String(), fmt.Sprintf(format, args...))
 }

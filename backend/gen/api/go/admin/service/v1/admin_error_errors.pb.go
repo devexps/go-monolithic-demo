@@ -11,18 +11,28 @@ import (
 // is compatible with the micro package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-// 401 code
+func IsBadRequest(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AdminErrorReason_BAD_REQUEST.String() && e.Code == 401
+}
+
+func ErrorBadRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, AdminErrorReason_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
+}
+
 func IsNotLoggedIn(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == AdminErrorReason_NOT_LOGGED_IN.String() && e.Code == 401
+	return e.Reason == AdminErrorReason_NOT_LOGGED_IN.String() && e.Code == 402
 }
 
-// 401 code
 func ErrorNotLoggedIn(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, AdminErrorReason_NOT_LOGGED_IN.String(), fmt.Sprintf(format, args...))
+	return errors.New(402, AdminErrorReason_NOT_LOGGED_IN.String(), fmt.Sprintf(format, args...))
 }
 
 func IsInvalidToken(err error) bool {
@@ -30,9 +40,9 @@ func IsInvalidToken(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == AdminErrorReason_INVALID_TOKEN.String() && e.Code == 402
+	return e.Reason == AdminErrorReason_INVALID_TOKEN.String() && e.Code == 403
 }
 
 func ErrorInvalidToken(format string, args ...interface{}) *errors.Error {
-	return errors.New(402, AdminErrorReason_INVALID_TOKEN.String(), fmt.Sprintf(format, args...))
+	return errors.New(403, AdminErrorReason_INVALID_TOKEN.String(), fmt.Sprintf(format, args...))
 }

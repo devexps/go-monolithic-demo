@@ -19,7 +19,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeString,
+				Type:   field.TypeUint32,
 				Column: user.FieldID,
 			},
 		},
@@ -30,12 +30,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldUpdateTime: {Type: field.TypeTime, Column: user.FieldUpdateTime},
 			user.FieldDeleteTime: {Type: field.TypeTime, Column: user.FieldDeleteTime},
 			user.FieldStatus:     {Type: field.TypeEnum, Column: user.FieldStatus},
-			user.FieldUserName:   {Type: field.TypeString, Column: user.FieldUserName},
+			user.FieldUsername:   {Type: field.TypeString, Column: user.FieldUsername},
 			user.FieldPassword:   {Type: field.TypeString, Column: user.FieldPassword},
 			user.FieldNickName:   {Type: field.TypeString, Column: user.FieldNickName},
 			user.FieldRealName:   {Type: field.TypeString, Column: user.FieldRealName},
 			user.FieldEmail:      {Type: field.TypeString, Column: user.FieldEmail},
 			user.FieldPhone:      {Type: field.TypeString, Column: user.FieldPhone},
+			user.FieldAuthority:  {Type: field.TypeEnum, Column: user.FieldAuthority},
 		},
 	}
 	return graph
@@ -82,8 +83,8 @@ func (f *UserFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql string predicate on the id field.
-func (f *UserFilter) WhereID(p entql.StringP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *UserFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(user.FieldID))
 }
 
@@ -112,9 +113,9 @@ func (f *UserFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(user.FieldStatus))
 }
 
-// WhereUserName applies the entql string predicate on the user_name field.
-func (f *UserFilter) WhereUserName(p entql.StringP) {
-	f.Where(p.Field(user.FieldUserName))
+// WhereUsername applies the entql string predicate on the username field.
+func (f *UserFilter) WhereUsername(p entql.StringP) {
+	f.Where(p.Field(user.FieldUsername))
 }
 
 // WherePassword applies the entql string predicate on the password field.
@@ -140,4 +141,9 @@ func (f *UserFilter) WhereEmail(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *UserFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(user.FieldPhone))
+}
+
+// WhereAuthority applies the entql string predicate on the authority field.
+func (f *UserFilter) WhereAuthority(p entql.StringP) {
+	f.Where(p.Field(user.FieldAuthority))
 }
