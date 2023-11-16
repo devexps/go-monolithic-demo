@@ -5,11 +5,11 @@ go 1.18
 require (
 	entgo.io/ent v0.11.10
 	github.com/devexps/go-bootstrap v1.0.0
-	github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-20231107084512-2d6ead0b2a51
-	github.com/devexps/go-micro/v2 v2.0.2
-	github.com/devexps/go-swagger-ui v0.0.0-20231102043114-64b07af220e0
-	github.com/devexps/go-utils v0.0.0-20231116051523-ad09d4529e5d
-	github.com/devexps/go-utils/entgo v0.0.0-20231116051523-ad09d4529e5d
+	github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.4
+	github.com/devexps/go-micro/v2 v2.0.4
+	github.com/devexps/go-swagger-ui v1.0.0
+	github.com/devexps/go-utils v1.0.2
+	github.com/devexps/go-utils/entgo v1.0.2
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/gofrs/uuid v4.0.0+incompatible
@@ -18,7 +18,7 @@ require (
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/lib/pq v1.10.7
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
-	google.golang.org/grpc v1.56.2
+	google.golang.org/grpc v1.56.3
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -34,17 +34,17 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/devexps/go-micro/config/consul/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/config/etcd/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/config/k8s/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/log/fluent/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/log/logrus/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/log/zap/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/registry/consul/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/registry/etcd/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/registry/k8s/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-micro/registry/zookeeper/v2 v2.0.0-20231106083309-0e1ceee74915 // indirect
-	github.com/devexps/go-pkg/v2 v2.0.0 // indirect
+	github.com/devexps/go-micro/config/consul/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/config/etcd/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/config/k8s/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/log/fluent/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/log/logrus/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/log/zap/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/registry/consul/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/registry/etcd/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/registry/k8s/v2 v2.0.4 // indirect
+	github.com/devexps/go-micro/registry/zookeeper/v2 v2.0.4 // indirect
+	github.com/devexps/go-pkg/v2 v2.0.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -106,6 +106,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/openzipkin/zipkin-go v0.4.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.21.8 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cobra v1.8.0 // indirect
@@ -135,7 +136,7 @@ require (
 	go.uber.org/zap v1.23.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect

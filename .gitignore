@@ -22,3 +22,6 @@ go.work
 
 # Go binary files
 bin/
+
+# Dev
+_*.sh
