@@ -23,7 +23,7 @@ var (
 		{Name: "real_name", Type: field.TypeString, Nullable: true, Size: 128},
 		{Name: "email", Type: field.TypeString, Nullable: true, Size: 127},
 		{Name: "phone", Type: field.TypeString, Nullable: true, Size: 11},
-		{Name: "authority", Type: field.TypeEnum, Nullable: true, Enums: []string{"UA_UNSPECIFIED", "SYS_ADMIN", "CUSTOMER_USER", "GUEST_USER", "REFRESH_TOKEN"}, Default: "CUSTOMER_USER"},
+		{Name: "authority", Type: field.TypeEnum, Nullable: true, Enums: []string{"SYS_ADMIN", "CUSTOMER_USER", "GUEST_USER", "REFRESH_TOKEN"}, Default: "CUSTOMER_USER"},
 	}
 	// UserTable holds the schema information for the "user" table.
 	UserTable = &schema.Table{

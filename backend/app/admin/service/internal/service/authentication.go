@@ -60,6 +60,7 @@ func (s *AuthenticationService) Logout(ctx context.Context, req *adminV1.LogoutR
 		return nil, err
 	}
 	req.Id = authInfo.UserId
+
 	_, err = s.utuc.RemoveToken(ctx, &userV1.User{
 		Id: req.GetId(),
 	})
@@ -104,6 +105,7 @@ func (s *AuthenticationService) GetMe(ctx context.Context, req *adminV1.GetMeReq
 		return nil, err
 	}
 	req.Id = authInfo.UserId
+
 	userRsp, err := s.uc.GetUser(ctx, &userV1.GetUserRequest{
 		Id: req.GetId(),
 	})

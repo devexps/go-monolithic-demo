@@ -117,11 +117,10 @@ const DefaultAuthority = AuthorityCUSTOMER_USER
 
 // Authority values.
 const (
-	AuthorityUA_UNSPECIFIED Authority = "UA_UNSPECIFIED"
-	AuthoritySYS_ADMIN      Authority = "SYS_ADMIN"
-	AuthorityCUSTOMER_USER  Authority = "CUSTOMER_USER"
-	AuthorityGUEST_USER     Authority = "GUEST_USER"
-	AuthorityREFRESH_TOKEN  Authority = "REFRESH_TOKEN"
+	AuthoritySYS_ADMIN     Authority = "SYS_ADMIN"
+	AuthorityCUSTOMER_USER Authority = "CUSTOMER_USER"
+	AuthorityGUEST_USER    Authority = "GUEST_USER"
+	AuthorityREFRESH_TOKEN Authority = "REFRESH_TOKEN"
 )
 
 func (a Authority) String() string {
@@ -131,7 +130,7 @@ func (a Authority) String() string {
 // AuthorityValidator is a validator for the "authority" field enum values. It is called by the builders before save.
 func AuthorityValidator(a Authority) error {
 	switch a {
-	case AuthorityUA_UNSPECIFIED, AuthoritySYS_ADMIN, AuthorityCUSTOMER_USER, AuthorityGUEST_USER, AuthorityREFRESH_TOKEN:
+	case AuthoritySYS_ADMIN, AuthorityCUSTOMER_USER, AuthorityGUEST_USER, AuthorityREFRESH_TOKEN:
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for authority field: %q", a)

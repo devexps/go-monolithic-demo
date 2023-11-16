@@ -94,3 +94,15 @@ func IsUpdateDataFailed(err error) bool {
 func ErrorUpdateDataFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(407, UserErrorReason_UPDATE_DATA_FAILED.String(), fmt.Sprintf(format, args...))
 }
+
+func IsDeleteDataFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_DELETE_DATA_FAILED.String() && e.Code == 408
+}
+
+func ErrorDeleteDataFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(408, UserErrorReason_DELETE_DATA_FAILED.String(), fmt.Sprintf(format, args...))
+}

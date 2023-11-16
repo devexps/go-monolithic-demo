@@ -80,6 +80,15 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 }
 
 // DeleteUser .
-func (s *UserService) DeleteUser(context.Context, *v1.DeleteUserRequest) (*emptypb.Empty, error) {
-	return nil, nil
+func (s *UserService) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*emptypb.Empty, error) {
+	authInfo, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	req.OperatorId = authInfo.UserId
+
+	if _, err := s.uc.DeleteUser(ctx, req); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }

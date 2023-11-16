@@ -18,15 +18,15 @@ type User struct {
 	// id
 	ID uint32 `json:"id,omitempty"`
 	// create_by
-	CreateBy uint32 `json:"create_by,omitempty"`
+	CreateBy *uint32 `json:"create_by,omitempty"`
 	// create_time
-	CreateTime time.Time `json:"create_time,omitempty"`
+	CreateTime *time.Time `json:"create_time,omitempty"`
 	// update_time
-	UpdateTime time.Time `json:"update_time,omitempty"`
+	UpdateTime *time.Time `json:"update_time,omitempty"`
 	// delete_time
-	DeleteTime time.Time `json:"delete_time,omitempty"`
+	DeleteTime *time.Time `json:"delete_time,omitempty"`
 	// status
-	Status user.Status `json:"status,omitempty"`
+	Status *user.Status `json:"status,omitempty"`
 	// username
 	Username *string `json:"username,omitempty"`
 	// password
@@ -79,31 +79,36 @@ func (u *User) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field create_by", values[i])
 			} else if value.Valid {
-				u.CreateBy = uint32(value.Int64)
+				u.CreateBy = new(uint32)
+				*u.CreateBy = uint32(value.Int64)
 			}
 		case user.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field create_time", values[i])
 			} else if value.Valid {
-				u.CreateTime = value.Time
+				u.CreateTime = new(time.Time)
+				*u.CreateTime = value.Time
 			}
 		case user.FieldUpdateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
-				u.UpdateTime = value.Time
+				u.UpdateTime = new(time.Time)
+				*u.UpdateTime = value.Time
 			}
 		case user.FieldDeleteTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field delete_time", values[i])
 			} else if value.Valid {
-				u.DeleteTime = value.Time
+				u.DeleteTime = new(time.Time)
+				*u.DeleteTime = value.Time
 			}
 		case user.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				u.Status = user.Status(value.String)
+				u.Status = new(user.Status)
+				*u.Status = user.Status(value.String)
 			}
 		case user.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -182,20 +187,30 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
-	builder.WriteString("create_by=")
-	builder.WriteString(fmt.Sprintf("%v", u.CreateBy))
+	if v := u.CreateBy; v != nil {
+		builder.WriteString("create_by=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("create_time=")
-	builder.WriteString(u.CreateTime.Format(time.ANSIC))
+	if v := u.CreateTime; v != nil {
+		builder.WriteString("create_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("update_time=")
-	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
+	if v := u.UpdateTime; v != nil {
+		builder.WriteString("update_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("delete_time=")
-	builder.WriteString(u.DeleteTime.Format(time.ANSIC))
+	if v := u.DeleteTime; v != nil {
+		builder.WriteString("delete_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", u.Status))
+	if v := u.Status; v != nil {
+		builder.WriteString("status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := u.Username; v != nil {
 		builder.WriteString("username=")

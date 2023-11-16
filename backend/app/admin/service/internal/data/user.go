@@ -5,12 +5,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	entgoUpdate "github.com/devexps/go-utils/entgo/update"
 	"github.com/devexps/go-utils/fieldmask"
+	"github.com/devexps/go-utils/trans"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
 
 	"github.com/devexps/go-micro/v2/log"
 	"github.com/devexps/go-utils/crypto"
 	entgoQuery "github.com/devexps/go-utils/entgo/query"
+	timeUtil "github.com/devexps/go-utils/time"
 
 	"github.com/devexps/go-monolithic-demo/app/admin/service/internal/data/ent"
 	"github.com/devexps/go-monolithic-demo/app/admin/service/internal/data/ent/user"
@@ -33,27 +35,6 @@ func NewUserRepo(data *Data, logger log.Logger) *UserRepo {
 	}
 }
 
-// VerifyPassword .
-func (r *UserRepo) VerifyPassword(ctx context.Context, req *v1.VerifyPasswordRequest) (*v1.User, error) {
-	resp, err := r.data.db.Client().User.
-		Query().
-		Select(user.FieldID, user.FieldUsername, user.FieldPassword).
-		Where(user.UsernameEQ(req.GetUserName())).
-		Only(ctx)
-	if err != nil {
-		r.log.Errorf("VerifyPassword query user data failed, err=%v", err)
-		return nil, v1.ErrorUserNotExist("user not exist")
-	}
-	bMatched := crypto.CheckPasswordHash(req.GetPassword(), *resp.Password)
-	if !bMatched {
-		//hintPass, _ := crypto.HashPassword(req.GetPassword())
-		//r.log.Warn(hintPass)
-		return nil, v1.ErrorInvalidPassword("invalid password")
-	}
-	u := r.convertEntToProto(resp)
-	return u, err
-}
-
 // GetUser .
 func (r *UserRepo) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.User, error) {
 	resp, err := r.data.db.Client().User.Get(ctx, req.GetId())
@@ -64,8 +45,7 @@ func (r *UserRepo) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.Use
 		r.log.Errorf("GetUser query one data failed, err=%v", err)
 		return nil, v1.ErrorQueryDataFailed("query data failed")
 	}
-	u := r.convertEntToProto(resp)
-	return u, err
+	return r.convertEntToProto(resp), nil
 }
 
 // ListUser .
@@ -134,6 +114,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*
 	return &emptypb.Empty{}, nil
 }
 
+// UpdateUser .
 func (r *UserRepo) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*emptypb.Empty, error) {
 	if req.GetUpdateMask() == nil {
 		return nil, v1.ErrorInvalidRequest("invalid field mask")
@@ -172,20 +153,85 @@ func (r *UserRepo) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*
 		r.log.Errorf("UpdateUser update one data failed: %v", err)
 		return nil, v1.ErrorUpdateDataFailed("update one data failed")
 	}
-	return nil, nil
+	return &emptypb.Empty{}, nil
+}
+
+// DeleteUser .
+func (r *UserRepo) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*emptypb.Empty, error) {
+	err := r.data.db.Client().User.
+		DeleteOneID(req.GetId()).
+		Exec(ctx)
+	if err != nil {
+		r.log.Errorf("DeleteUser delete one data failed: %v", err)
+		return nil, v1.ErrorDeleteDataFailed("delete one data failed")
+	}
+	return &emptypb.Empty{}, nil
+}
+
+// GetUserByUserName .
+func (r *UserRepo) GetUserByUserName(ctx context.Context, req *v1.GetUserByUserNameRequest) (*v1.User, error) {
+	ret, err := r.data.db.Client().User.Query().
+		Where(user.UsernameEQ(req.GetUserName())).
+		Only(ctx)
+	if err != nil {
+		r.log.Errorf("GetUserByUserName query user data failed: %v", err)
+		return nil, v1.ErrorQueryDataFailed("query user data failed")
+	}
+	return r.convertEntToProto(ret), err
+}
+
+// VerifyPassword .
+func (r *UserRepo) VerifyPassword(ctx context.Context, req *v1.VerifyPasswordRequest) (*v1.User, error) {
+	resp, err := r.data.db.Client().User.
+		Query().
+		Select(user.FieldID, user.FieldUsername, user.FieldPassword).
+		Where(user.UsernameEQ(req.GetUserName())).
+		Only(ctx)
+	if err != nil {
+		r.log.Errorf("VerifyPassword query user data failed, err=%v", err)
+		return nil, v1.ErrorUserNotExist("user not exist")
+	}
+	bMatched := crypto.CheckPasswordHash(req.GetPassword(), *resp.Password)
+	if !bMatched {
+		//hintPass, _ := crypto.HashPassword(req.GetPassword())
+		//r.log.Warn(hintPass)
+		return nil, v1.ErrorInvalidPassword("invalid password")
+	}
+	return r.convertEntToProto(resp), nil
+}
+
+// UserExists .
+func (r *UserRepo) UserExists(ctx context.Context, req *v1.UserExistsRequest) (*v1.UserExistsResponse, error) {
+	count, _ := r.data.db.Client().User.
+		Query().
+		Select(user.FieldID).
+		Where(user.UsernameEQ(req.GetUserName())).
+		Count(ctx)
+	return &v1.UserExistsResponse{
+		Exist: count > 0,
+	}, nil
 }
 
 func (r *UserRepo) convertEntToProto(in *ent.User) *v1.User {
 	if in == nil {
 		return nil
 	}
+	var authority *v1.UserAuthority
+	if in.Authority != nil {
+		authority = (*v1.UserAuthority)(trans.Int32(v1.UserAuthority_value[string(*in.Authority)]))
+	}
 	return &v1.User{
-		Id:       in.ID,
-		UserName: in.Username,
-		NickName: in.NickName,
-		RealName: in.RealName,
-		Email:    in.Email,
-		Phone:    in.Phone,
+		Id:         in.ID,
+		UserName:   in.Username,
+		NickName:   in.NickName,
+		RealName:   in.RealName,
+		Email:      in.Email,
+		Phone:      in.Phone,
+		Authority:  authority,
+		Status:     (*string)(in.Status),
+		CreateTime: timeUtil.TimeToTimeString(in.CreateTime),
+		UpdateTime: timeUtil.TimeToTimeString(in.UpdateTime),
+		DeleteTime: timeUtil.TimeToTimeString(in.DeleteTime),
 	}
 }
 

@@ -323,23 +323,23 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := uc.mutation.CreateBy(); ok {
 		_spec.SetField(user.FieldCreateBy, field.TypeUint32, value)
-		_node.CreateBy = value
+		_node.CreateBy = &value
 	}
 	if value, ok := uc.mutation.CreateTime(); ok {
 		_spec.SetField(user.FieldCreateTime, field.TypeTime, value)
-		_node.CreateTime = value
+		_node.CreateTime = &value
 	}
 	if value, ok := uc.mutation.UpdateTime(); ok {
 		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
-		_node.UpdateTime = value
+		_node.UpdateTime = &value
 	}
 	if value, ok := uc.mutation.DeleteTime(); ok {
 		_spec.SetField(user.FieldDeleteTime, field.TypeTime, value)
-		_node.DeleteTime = value
+		_node.DeleteTime = &value
 	}
 	if value, ok := uc.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
-		_node.Status = value
+		_node.Status = &value
 	}
 	if value, ok := uc.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)

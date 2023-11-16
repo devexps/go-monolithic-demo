@@ -17,4 +17,5 @@ enum UserErrorReason {
   QUERY_DATA_FAILED = 4 [(errors.code) = 405];
   INSERT_DATA_FAILED = 5 [(errors.code) = 406];
   UPDATE_DATA_FAILED = 6 [(errors.code) = 407];
+  DELETE_DATA_FAILED = 7 [(errors.code) = 408];
 }

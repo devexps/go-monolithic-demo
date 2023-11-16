@@ -8,8 +8,8 @@ require (
 	github.com/devexps/go-micro/middleware/authn/engine/jwt/v2 v2.0.0-20231107084512-2d6ead0b2a51
 	github.com/devexps/go-micro/v2 v2.0.2
 	github.com/devexps/go-swagger-ui v0.0.0-20231102043114-64b07af220e0
-	github.com/devexps/go-utils v0.0.0-20231115105147-4a33c319453a
-	github.com/devexps/go-utils/entgo v0.0.0-20231115105147-4a33c319453a
+	github.com/devexps/go-utils v0.0.0-20231116051523-ad09d4529e5d
+	github.com/devexps/go-utils/entgo v0.0.0-20231116051523-ad09d4529e5d
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/gofrs/uuid v4.0.0+incompatible
