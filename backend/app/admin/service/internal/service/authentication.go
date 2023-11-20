@@ -6,11 +6,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/devexps/go-micro/v2/log"
-	"github.com/devexps/go-monolithic-demo/app/admin/service/internal/data"
-	"github.com/devexps/go-monolithic-demo/pkg/middleware/auth"
 
+	"github.com/devexps/go-monolithic-demo/app/admin/service/internal/data"
 	adminV1 "github.com/devexps/go-monolithic-demo/gen/api/go/admin/service/v1"
 	userV1 "github.com/devexps/go-monolithic-demo/gen/api/go/user/service/v1"
+	"github.com/devexps/go-monolithic-demo/pkg/middleware/auth"
 )
 
 // AuthenticationService .

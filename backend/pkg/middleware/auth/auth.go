@@ -2,11 +2,12 @@ package auth
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/devexps/go-micro/v2/middleware"
 	"github.com/devexps/go-micro/v2/middleware/authn"
 	"github.com/devexps/go-micro/v2/middleware/authz"
 	"github.com/devexps/go-micro/v2/transport"
-	"strconv"
 )
 
 var (
