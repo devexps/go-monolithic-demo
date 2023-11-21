@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gofrs/uuid"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/devexps/go-micro/middleware/authn/engine/jwt/v2"

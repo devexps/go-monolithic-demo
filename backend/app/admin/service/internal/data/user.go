@@ -193,7 +193,11 @@ func (r *UserRepo) VerifyPassword(ctx context.Context, req *v1.VerifyPasswordReq
 		r.log.Errorf("VerifyPassword query user data failed, err=%v", err)
 		return nil, v1.ErrorUserNotExist("user not exist")
 	}
-	bMatched := crypto.CheckPasswordHash(req.GetPassword(), *resp.Password)
+	var dbPassword string
+	if resp.Password != nil {
+		dbPassword = *resp.Password
+	}
+	bMatched := crypto.CheckPasswordHash(req.GetPassword(), dbPassword)
 	if !bMatched {
 		//hintPass, _ := crypto.HashPassword(req.GetPassword())
 		//r.log.Warn(hintPass)

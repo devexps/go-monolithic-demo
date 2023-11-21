@@ -14,7 +14,7 @@ services:
       - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
 
   postgres:
-    image: docker.io/bitnami/postgresql:12.0.0
+    image: docker.io/bitnami/postgresql:latest
     ports:
       - "5432:5432"
     environment:

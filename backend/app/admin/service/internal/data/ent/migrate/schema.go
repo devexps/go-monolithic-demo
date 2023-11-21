@@ -11,19 +11,19 @@ import (
 var (
 	// UserColumns holds the columns for the "user" table.
 	UserColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true},
-		{Name: "create_by", Type: field.TypeUint32, Nullable: true},
-		{Name: "create_time", Type: field.TypeTime, Nullable: true},
-		{Name: "update_time", Type: field.TypeTime, Nullable: true},
-		{Name: "delete_time", Type: field.TypeTime, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Enums: []string{"OFF", "ON"}, Default: "ON"},
-		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true, Size: 50},
-		{Name: "password", Type: field.TypeString, Nullable: true, Size: 255},
-		{Name: "nick_name", Type: field.TypeString, Nullable: true, Size: 128},
-		{Name: "real_name", Type: field.TypeString, Nullable: true, Size: 128},
-		{Name: "email", Type: field.TypeString, Nullable: true, Size: 127},
-		{Name: "phone", Type: field.TypeString, Nullable: true, Size: 11},
-		{Name: "authority", Type: field.TypeEnum, Nullable: true, Enums: []string{"SYS_ADMIN", "CUSTOMER_USER", "GUEST_USER", "REFRESH_TOKEN"}, Default: "CUSTOMER_USER"},
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "create_by", Type: field.TypeUint32, Nullable: true, Comment: "create_by"},
+		{Name: "create_time", Type: field.TypeTime, Nullable: true, Comment: "create_time"},
+		{Name: "update_time", Type: field.TypeTime, Nullable: true, Comment: "update_time"},
+		{Name: "delete_time", Type: field.TypeTime, Nullable: true, Comment: "delete_time"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "status", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true, Size: 50, Comment: "username"},
+		{Name: "password", Type: field.TypeString, Nullable: true, Size: 255, Comment: "password"},
+		{Name: "nick_name", Type: field.TypeString, Nullable: true, Size: 128, Comment: "nick_name"},
+		{Name: "real_name", Type: field.TypeString, Nullable: true, Size: 128, Comment: "real_name"},
+		{Name: "email", Type: field.TypeString, Nullable: true, Size: 127, Comment: "email"},
+		{Name: "phone", Type: field.TypeString, Nullable: true, Size: 11, Comment: "phone"},
+		{Name: "authority", Type: field.TypeEnum, Nullable: true, Comment: "authority", Enums: []string{"SYS_ADMIN", "CUSTOMER_USER", "GUEST_USER", "REFRESH_TOKEN"}, Default: "CUSTOMER_USER"},
 	}
 	// UserTable holds the schema information for the "user" table.
 	UserTable = &schema.Table{
