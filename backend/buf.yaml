@@ -1,4 +1,10 @@
 version: v1
+deps:
+  - 'buf.build/googleapis/googleapis'
+  - 'buf.build/envoyproxy/protoc-gen-validate'
+  - 'buf.build/devexps/gomicroapis'
+  - 'buf.build/gnostic/gnostic'
+  - 'buf.build/gogo/protobuf'
 breaking:
   use:
     - FILE

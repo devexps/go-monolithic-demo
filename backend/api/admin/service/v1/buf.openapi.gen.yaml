@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: false
 plugins:
-#   generate openapi v2 yaml doc
+#   generate openapi v3 yaml doc
   - name: openapi
     out: ./app/admin/service/cmd/server/assets
     opt:
